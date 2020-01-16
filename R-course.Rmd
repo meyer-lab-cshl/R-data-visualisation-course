@@ -214,8 +214,23 @@ display.brewer.all()
 ```
 
 
-```{r color aes, echo=TRUE}
+```{r color scale, echo=TRUE}
 p + geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
   scale_color_brewer(type="qual", palette = "Set3")
 ```
+### 4.3.1 Exercises
+1. Try changing the cluster aesthetic to `size` and `shape`. Does this convey
+the same level of information as a color scale?
+2. What other variable in our dataset would be well represented by a `shape`
+scale? Add a shape aesthetic for the variable you identified.
+3. Generally speaking, which type of data lends itself to shape scales, which
+to size, which to color?
+4. Why does this not work?
 
+```{r}
+p + geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
+  scale_color_brewer(type="qual", palette = "Set1")
+```
+
+
+When you run that line of code, dplyr executes the filtering operation and returns a new data frame. dplyr functions never modify their inputs, so if you want to save the result, you’ll need to use the assignment operator, <-
