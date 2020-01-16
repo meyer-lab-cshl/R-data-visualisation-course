@@ -1,0 +1,221 @@
+---
+title: "R Notebook"
+author: "Hannah Meyer"
+date: "01/08/2020"
+output:
+  html_notebook: default
+  pdf_document: default
+---
+
+## 1. Setting up
+The document you are looking at right now is a R Notebook. R Notebooks allow
+us to interleaf text describing our analysis (as thi sone) with the R code that
+actually contains the analyses commands. 
+
+The text follows some simple markdown rules (for instance bold header sections
+etc, which we won't go into detail here). Important for us at this stage is
+that whenever we want to include analysis code into the document, we have
+to create an R code *chunk*. To include a new *chunk* click the _Insert_ buttom
+at the top of your editor window and select _R_. R code *chunks* will be 
+
+All code chunks have some default settings, concering their layout, execution
+etc, which can be heavily customised. For our beginners tutorial, we do not
+have to worry about all of these. I mention this here, as the following and
+first chunk of our document contains some basic options that I want to have
+applied to all chunks in the rest of the document. 
+
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+I then follow with a chunk that loads all libraries required for my analysis.
+Libraries or packages are a collection of functions, data and documentation
+for a specific task, for instance plotting or simulation.
+However, you won't have any addtional packages installed, so we'll have to do
+that before we can load the libraries. 
+
+```{r install libraries, message=FALSE, eval=FALSE}
+install.packages('tidyverse')
+install.packages('forcats')
+
+```
+
+The above chunk installs the libraries `tidyverse` and  `forcats`.
+[tidyverse](https://www.tidyverse.org/) is an 'opinionated collection of R
+packages designed for data science. All packages share an underlying design
+philosophy, grammar, and data structures.' While there are many other options
+for wrangling your data, formating and plotting, I would suggest to learn this
+from the beginning as it is very neat and makes the code very readable. 
+It also includes the `ggplot2` plotting package, which is very versatile and
+great for generating publication style figures. The first two parts of this
+tutorial rely completely on `tidyverse`. 
+
+Now that we installed the libraries, we can load them into our R workspace. 
+
+Note: Libraries only have to be installed once, however, they will have to
+be loaded into the R workspae whenever we open a new R session. Think of the
+libraries you install as tools that you buy: you buy a hammer the first time you
+realise you
+want to hang a picture and need a hook in the wall. Once you bought it, you need
+to actually bring it to the room where you want to hang the picture. After that,
+you have the hammer and can use it whenever you like. The hammer is you the
+library that you install (buy) once and then load into your R workspace (use)
+whenever you have a task that can be accomplished with that hammer.
+
+The following chunk loads the libraries that we installed above into our R
+workspace:
+
+```{r libraries, message=FALSE}
+library('tidyverse')
+library('tidyr')
+library("sf")
+library("rnaturalearth")
+library("RColorBrewer")
+```
+
+## 2. Reading your data
+To analyse the data, we will first need to read it into the R workspace.
+We can do this with the `read_csv` function as below. Whenever we use a function,
+there are a number of possible outcomes that we might want to see:
+
+1. We want to see the result of the function displayed after execution;
+1. We want the result to be saved in a variable.
+
+To assign the outcome of a function into a variable, we use the assign operator
+`<-`. 
+
+Whenever I set up a new analyses, I usually specify the directory where all the
+data are stored and to which we will write the results at the beginning
+of my analysis and save it in a object. I use this object in conjuction with
+the function `file.path` to specify where I am reading data from and where I
+will write data to. Using this strategy, I always know where the data that
+belongs to the analysis is stored and if ever I change my folder structure
+changes, I only need to change the directory specification once,
+(when declaring the variable) and not many times throughout the code. 
+
+To put this all together, in the following chunk, we first assign the path
+to our data directory into the object `datadir`, a name of my own chosing and
+create a object that stores the name of our input datafile. We then pass the
+new `file_coordinates` object to the `read_csv` function and assign
+the ouput to a new object called `coord`.
+
+```{r paths, message=FALSE}
+datadir <- "~/Teaching"
+file_coordinates <- file.path(datadir, "2004_Science_Smith_data.csv")
+
+coord <- read_csv(file_coordinates)
+```
+`read_csv()` prints out a column specification that gives the name and type of
+each column. To have a look what the `coord` object looks like, simply type
+`coord`.
+
+## 3. Data and object types
+The most common data types in R are:
+    
+* `int` stands for integers i.e 1, 2, 3.
+* `dbl` stands for doubles, or real numbers i.e. 1.2, 1.7, 9.0
+* `chr` stands for character vectors, or strings i.e. "a", "b", "word"
+* `lgl` stands for logical, vectors that contain only TRUE or FALSE.
+* `fctr` stands for factors, which R uses to represent categorical variables
+with fixed possible values.
+
+There are many different data types in R. For the purpose of data visualisation
+and this workshop, we will only work with two object types:
+* `tibble`:
+* `data.frame`:
+
+# 3.1 Exercises:
+1. Create a new chunk and look at the `coord` object.
+2. Which data types are present in our dataset?
+3. How many observations and variables are in our dataset?
+4. What are the variables?
+
+## 4. A recipe for generating graphs with ggplot2
+
+1. Setting up a coordinate system with the function `ggplot()`: provide the
+  dataset to use in the graph
+1. Adding layers to `ggplot()`: `geom_xxx()` functions add graphical layers to
+  your plot:
+  * layers are quite literally added to `ggplot()` object, by using the `+` 
+    operator
+  * each geom function expects a mapping argument which defines how variables
+    are mapped to visualisation. The mapping argument is provided with `aes()`,
+    where the x and y arguments describe which variables to map to the x and y
+    axes. ggplot2 looks for the mapped variables in the data argument to
+    `ggplot()`.
+  * There are many geom functions that each add a different type of
+    layer to a plot. Their names are very descriptive, for instance:
+      * `geom_point` adds a layer of points to the coordinate system,
+        effectively creating a scatterplot
+      * `geom_histogram` adds a histogram layer
+      * `geom_boxplot` adds a boxplot layer
+
+### 4.1 Our first plot
+
+```{r first plot}
+p <- ggplot(data=coord)
+p + geom_point(mapping=aes(x=x.coordinate, y=y.coordinate))
+```
+#### 4.1.1 Exercises
+1. Run ggplot(data = coord). What do you see?
+2. What makes this simple plot look very different from the map that we want 
+  to achieve?
+3. What other information in our data object `coord` could we use?
+
+### 4.2 Mapping additional aesthetics
+To Map additional information onto our 2d scatter plot, ggplot2 makes use of
+aesthetics. We have already seen aesthetics in the example above, where we
+mapped the `x.coordinate` and `y.coordinate` to the x- and y-axis using
+`aes(x=x.coordinate, y=y.coordinate)`. Broadly speaking, aesthetics are the
+visual properties of the objects in your plot. They include for instance the
+size, shape, or color of your points. The different flavors of an aesthetic
+are called levels. The levels in the shape aesthetic are for instance round, 
+triangular and square. Levels of the color aesthetic could be blue, red and 
+yellow. In our graph above, we have not used any of these aesthetics yet.
+Let's start by introducing color to the plot. As in the original publication,
+we can color the points in our plot by cluster name. We do this by simpling 
+specifying the color aestetic in the mapping:
+
+```{r color aes, echo=TRUE}
+p + geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster))
+```
+
+ `ggplot2` automatically assign a unique color level to each unique value of
+cluster. This assigment process is called scaling. Depending on data and
+aesthetic, `ggplot2` selects a reasonable scale and constructs a legend that
+explains the mapping between levels and variable values, in this case color
+and cluster. However, we can also provide our own color-scheme.
+
+### 4.3 Setting scales
+Adding scales to `ggplot` objects follows the same scheme as adding layers: we
+add the scale to the existing object by the `+` operator. Similar to `geom_xxx`,
+we have `scale_xxx_yyy`: xxx specifies the aestetic for which we are providing
+the scale, yyy specifies the type of scale we want. For instance:
+  * `scale_color_continuous` sets a continuous scale for the asthetic color;
+  * `scale_shape_discrete` sets a discrete scale for the asthetic shape.
+
+When selecting a color-scale (or any scale really), we we need to consider what
+type of data we are displaying and what message we want to convey:
+  * qualitative data: unordered, distinct categories, as in our example cluster
+    names;
+  * sequential data: ordered data that progresses from low to high, as in our
+    example 'year of isolation';
+  * diverging data: data from low to high, with emphasis on mid-range values as
+    well for instance correlations that range from -1 to 1, where the mid-range
+    around 0 ie no correlation are equally important to be visualised
+
+The [colorbrewer website](http://colorbrewer2.org/) provides a great resource
+to pick appropriate color scales.
+
+`ggplot2` has direct access to these color schemes:
+```{r}
+display.brewer.all()
+```
+
+
+```{r color aes, echo=TRUE}
+p + geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
+  scale_color_brewer(type="qual", palette = "Set3")
+```
+
