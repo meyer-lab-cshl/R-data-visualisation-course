@@ -111,6 +111,7 @@ each column. To have a look what the `coord` object looks like, simply type
 `coord`.
 
 ## 3. Data and object types
+### 3.1 Data types
 The most common data types in R are:
     
 * `int` stands for integers i.e 1, 2, 3.
@@ -120,12 +121,14 @@ The most common data types in R are:
 * `fctr` stands for factors, which R uses to represent categorical variables
 with fixed possible values.
 
+### 3.2 Object types
 There are many different data types in R. For the purpose of data visualisation
 and this workshop, we will only work with two object types:
+
 * `tibble`:
 * `data.frame`:
 
-# 3.1 Exercises:
+### 3.3 Exercises:
 1. Create a new chunk and look at the `coord` object.
 2. Which data types are present in our dataset?
 3. How many observations and variables are in our dataset?
@@ -157,6 +160,7 @@ and this workshop, we will only work with two object types:
 p <- ggplot(data=coord)
 p + geom_point(mapping=aes(x=x.coordinate, y=y.coordinate))
 ```
+
 #### 4.1.1 Exercises
 1. Run ggplot(data = coord). What do you see?
 2. What makes this simple plot look very different from the map that we want 
@@ -164,7 +168,7 @@ p + geom_point(mapping=aes(x=x.coordinate, y=y.coordinate))
 3. What other information in our data object `coord` could we use?
 
 ### 4.2 Mapping additional aesthetics
-To Map additional information onto our 2d scatter plot, ggplot2 makes use of
+To map additional information onto our 2d scatter plot, ggplot2 makes use of
 aesthetics. We have already seen aesthetics in the example above, where we
 mapped the `x.coordinate` and `y.coordinate` to the x- and y-axis using
 `aes(x=x.coordinate, y=y.coordinate)`. Broadly speaking, aesthetics are the
@@ -192,11 +196,13 @@ Adding scales to `ggplot` objects follows the same scheme as adding layers: we
 add the scale to the existing object by the `+` operator. Similar to `geom_xxx`,
 we have `scale_xxx_yyy`: xxx specifies the aestetic for which we are providing
 the scale, yyy specifies the type of scale we want. For instance:
+  
   * `scale_color_continuous` sets a continuous scale for the asthetic color;
   * `scale_shape_discrete` sets a discrete scale for the asthetic shape.
 
-When selecting a color-scale (or any scale really), we we need to consider what
+When selecting a color-scale (or any scale really), we need to consider what
 type of data we are displaying and what message we want to convey:
+  
   * qualitative data: unordered, distinct categories, as in our example cluster
     names;
   * sequential data: ordered data that progresses from low to high, as in our
@@ -215,10 +221,20 @@ display.brewer.all()
 
 
 ```{r color scale, echo=TRUE}
-p + geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
+p +
+  geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
   scale_color_brewer(type="qual", palette = "Set3")
 ```
-### 4.3.1 Exercises
+To set an aesthetic manually, you move it outside the mapping argument and 
+specify the level:
+
+```{r manual aesthetic, echo=TRUE}
+p +
+  geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster), shape=17) +
+  scale_color_brewer(type="qual", palette = "Set3") 
+```
+
+#### 4.3.1 Exercises
 1. Try changing the cluster aesthetic to `size` and `shape`. Does this convey
 the same level of information as a color scale?
 2. What other variable in our dataset would be well represented by a `shape`
@@ -226,11 +242,82 @@ scale? Add a shape aesthetic for the variable you identified.
 3. Generally speaking, which type of data lends itself to shape scales, which
 to size, which to color?
 4. Why does this not work?
-
 ```{r}
-p + geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
+p +
+  geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
   scale_color_brewer(type="qual", palette = "Set1")
 ```
 
+5. Why does this code not color all points in red?
+```{r, echo=TRUE}
+p +
+  geom_point(aes(x=x.coordinate, y=y.coordinate, color="red")) 
+```
 
-When you run that line of code, dplyr executes the filtering operation and returns a new data frame. dplyr functions never modify their inputs, so if you want to save the result, you’ll need to use the assignment operator, <-
+### 4.4 Setting labels and themes
+So far, we have been concerned with the data layers of the plot, using
+`geom_xxx` to visualise different variables and `scale_xxx_yyy` to customise
+them. In the following section, we will have a look at customising the 'canvas'
+of the plot, i.e. the background, axis labels etc.
+
+#### 4.4.1 Coordinate system
+Looking at the antigenic map (Figure 1 in the Smith *et al* (2004) paper), we
+notice that their axis ratio of 1:1, ensuring that one unit on the y-axis is 
+equivalent to one unit on the y-axis. Our plot has a different ratio. Based on
+the range of the `x.coordinate` and `y.corrdinate` variable, `ggplot` 
+automatically choose the axis limits and more importantly here, their ratios. 
+We can easily change this default by adding a `coord_xx` layer, in this case
+`coord_fixed`, which will ensure a 1:1 ratio per default.
+
+```{r coordinate system}
+p + 
+  geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
+  scale_color_brewer(type="qual", palette = "Set3") +
+  coord_fixed()
+```
+
+#### 4.4.2 Labels
+Currently, our the axis and legend labels in our plot are simply the name of
+the variables we mapped to the aesthetics. We can change the axis labels and add
+a plot by providing arguments to the `labs` layer. Specifically, x and y axis
+labels can be set by the `xlab` and `ylab` arguments respectively, the title
+is specified by the `title` argument. To change the name of a legend, we have
+to specify the aesthetic we mapped it to, in this `color`.
+
+```{r labels}
+p + 
+  geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
+  scale_color_brewer(type="qual", palette = "Set3") +
+  labs(xlab="Dimension 1 [AU]",
+       ylab="Dimension 2 [AU]",
+       title="Antigenic cartography",
+       color="Cluster") +
+  coord_fixed()
+```
+
+#### 4.4.3 Themes
+Finally, we can customise the non-data components of our plot. While the
+developers of `ggplot2` had a strong preference for the default grey background,
+this is not to everyone's liking. As with everything else you've seen so far,
+there are some build-in options for customising. Here, we use the `theme_bw`
+to change to a white background.
+
+```{r themes}
+p + 
+  geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
+  scale_color_brewer(type="qual", palette = "Set3") +
+  xlab("Dimension 1 [AU]") +
+  ylab("Dimension 2 [AU]") +
+  ggtitle("Antigenic cartography") +
+  coord_fixed() +
+  theme_bw()
+```
+
+#### 4.4.4 Exercises
+1. What other coordinate system options exist? Hint: type `?coord_` in a new
+chunk and press tab to see other options.
+2. Rename the legend title for the `shape` aesthetic
+3. Test different themes and see how it effects to plot, for instance use
+`theme_void`, `theme_dark` and `theme_classic`. Similar to Exercise 1, you can 
+type `?theme_` and tab to see other possible build in themes.
+
