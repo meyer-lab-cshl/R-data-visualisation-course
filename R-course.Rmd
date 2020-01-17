@@ -3,26 +3,32 @@ title: "R Notebook"
 author: "Hannah Meyer"
 date: "01/08/2020"
 output:
-  html_notebook: default
-  pdf_document: default
+  html_notebook:
+    toc: true
+    toc_depth: 3
+  pdf_document:
+    toc: true
+    toc_depth: 3
 ---
 
 ## 1. Setting up
 The document you are looking at right now is a R Notebook. R Notebooks allow
-us to interleaf text describing our analysis (as thi sone) with the R code that
+us to interleaf text describing our analysis with the R code that
 actually contains the analyses commands. 
 
 The text follows some simple markdown rules (for instance bold header sections
 etc, which we won't go into detail here). Important for us at this stage is
 that whenever we want to include analysis code into the document, we have
 to create an R code *chunk*. To include a new *chunk* click the _Insert_ buttom
-at the top of your editor window and select _R_. R code *chunks* will be 
+at the top of your editor window and select _R_.
 
-All code chunks have some default settings, concering their layout, execution
+All code *chunks* have some default settings, concering their layout, execution
 etc, which can be heavily customised. For our beginners tutorial, we do not
 have to worry about all of these. I mention this here, as the following and
 first chunk of our document contains some basic options that I want to have
-applied to all chunks in the rest of the document. 
+applied to all chunks in the rest of the document. Specifically, it tells R
+studio that when I prepare this document for sharing with you as a pdf, that
+I want both the actual code and the results displayed in the document.
 
 
 ```{r setup}
@@ -30,30 +36,18 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 I then follow with a chunk that loads all libraries required for my analysis.
-Libraries or packages are a collection of functions, data and documentation
-for a specific task, for instance plotting or simulation.
-However, you won't have any addtional packages installed, so we'll have to do
-that before we can load the libraries. 
+The following chunk loads the libraries that you installed as a preparation for
+the course into our R workspace:
 
-```{r install libraries, message=FALSE, eval=FALSE}
-install.packages('tidyverse')
-install.packages('forcats')
-
+```{r libraries, message=FALSE}
+library("tidyverse")
+library("cowplot")
+library("sf")
+library("rnaturalearth")
+library("RColorBrewer")
 ```
 
-The above chunk installs the libraries `tidyverse` and  `forcats`.
-[tidyverse](https://www.tidyverse.org/) is an 'opinionated collection of R
-packages designed for data science. All packages share an underlying design
-philosophy, grammar, and data structures.' While there are many other options
-for wrangling your data, formating and plotting, I would suggest to learn this
-from the beginning as it is very neat and makes the code very readable. 
-It also includes the `ggplot2` plotting package, which is very versatile and
-great for generating publication style figures. The first two parts of this
-tutorial rely completely on `tidyverse`. 
-
-Now that we installed the libraries, we can load them into our R workspace. 
-
-Note: Libraries only have to be installed once, however, they will have to
+**Note**: Libraries only have to be installed once, however, they will have to
 be loaded into the R workspae whenever we open a new R session. Think of the
 libraries you install as tools that you buy: you buy a hammer the first time you
 realise you
@@ -63,27 +57,17 @@ you have the hammer and can use it whenever you like. The hammer is you the
 library that you install (buy) once and then load into your R workspace (use)
 whenever you have a task that can be accomplished with that hammer.
 
-The following chunk loads the libraries that we installed above into our R
-workspace:
-
-```{r libraries, message=FALSE}
-library('tidyverse')
-library('tidyr')
-library("sf")
-library("rnaturalearth")
-library("RColorBrewer")
-```
-
 ## 2. Reading your data
 To analyse the data, we will first need to read it into the R workspace.
 We can do this with the `read_csv` function as below. Whenever we use a function,
-there are a number of possible outcomes that we might want to see:
+there are two possible outcomes that we might want to see:
 
-1. We want to see the result of the function displayed after execution;
-1. We want the result to be saved in a variable.
+1. we simply want to see the result of the function displayed after execution;
+2. we want to store the result in a variable for future use. 
 
 To assign the outcome of a function into a variable, we use the assign operator
-`<-`. 
+`<-`. To simply see the results without later access to it, we just type the
+command and execute it.
 
 Whenever I set up a new analyses, I usually specify the directory where all the
 data are stored and to which we will write the results at the beginning
@@ -107,8 +91,14 @@ file_coordinates <- file.path(datadir, "2004_Science_Smith_data.csv")
 coord <- read_csv(file_coordinates)
 ```
 `read_csv()` prints out a column specification that gives the name and type of
-each column. To have a look what the `coord` object looks like, simply type
-`coord`.
+each column.
+
+#### 2.1 Exercises
+1. Have a look at the `file_coordinates` object by creating a new chunk,
+typing `file_coordinates` and executing the code chunk. What did the `file.path`
+   function do?
+2. In the same chunk, have a look at what the the `coord` object looks.
+
 
 ## 3. Data and object types
 ### 3.1 Data types
@@ -125,14 +115,21 @@ with fixed possible values.
 There are many different data types in R. For the purpose of data visualisation
 and this workshop, we will only work with two object types:
 
-* `tibble`:
-* `data.frame`:
+* `data.frame`: a list of variables with the same number of observations.
+Variables are in columns, observations in rows. Rows have unique rownames.
+* `tibble`:  tibbles are opinionated data frames with an improved printing
+  display, stricter rules for re-formating that aid in avoiding bugs and no
+  rownames.
 
-### 3.3 Exercises:
-1. Create a new chunk and look at the `coord` object.
-2. Which data types are present in our dataset?
-3. How many observations and variables are in our dataset?
-4. What are the variables?
+**Note**: Tibbles are newer than data.frames and some old functions will not
+work with them and might require actual data.frames; For the majority of our
+analyses and visualisations we will work with tibbles.
+
+
+### 3.3 Exercises: 
+1. Which data types are present in our dataset?
+2. How many observations and variables are in our dataset?
+3. What are the variables?
 
 ## 4. A recipe for generating graphs with ggplot2
 
@@ -265,7 +262,7 @@ Looking at the antigenic map (Figure 1 in the Smith *et al* (2004) paper), we
 notice that their axis ratio of 1:1, ensuring that one unit on the y-axis is 
 equivalent to one unit on the y-axis. Our plot has a different ratio. Based on
 the range of the `x.coordinate` and `y.corrdinate` variable, `ggplot` 
-automatically choose the axis limits and more importantly here, their ratios. 
+automatically chose the axis limits and more importantly here, their ratios. 
 We can easily change this default by adding a `coord_xx` layer, in this case
 `coord_fixed`, which will ensure a 1:1 ratio per default.
 
@@ -277,9 +274,9 @@ p +
 ```
 
 #### 4.4.2 Labels
-Currently, our the axis and legend labels in our plot are simply the name of
-the variables we mapped to the aesthetics. We can change the axis labels and add
-a plot by providing arguments to the `labs` layer. Specifically, x and y axis
+Currently, the axis and legend labels in our plot are simply the name of
+the variables we mapped to the aesthetics. We can change the axis labels by
+providing arguments to the `labs` layer. Specifically, x and y axis
 labels can be set by the `xlab` and `ylab` arguments respectively, the title
 is specified by the `title` argument. To change the name of a legend, we have
 to specify the aesthetic we mapped it to, in this `color`.
@@ -320,4 +317,7 @@ chunk and press tab to see other options.
 3. Test different themes and see how it effects to plot, for instance use
 `theme_void`, `theme_dark` and `theme_classic`. Similar to Exercise 1, you can 
 type `?theme_` and tab to see other possible build in themes.
+
+
+
 
