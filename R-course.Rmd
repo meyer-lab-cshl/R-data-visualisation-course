@@ -3,15 +3,18 @@ title: "R Notebook"
 author: "Hannah Meyer"
 date: "01/08/2020"
 output:
-  html_notebook:
-    toc: true
-    toc_depth: 3
   pdf_document:
     toc: true
     toc_depth: 3
+    number_sections: true
+  html_notebook:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
 ---
 
-## 1. Setting up
+# Setting up
 The document you are looking at right now is a R Notebook. R Notebooks allow
 us to interleaf text describing our analysis with the R code that
 actually contains the analyses commands. 
@@ -32,7 +35,11 @@ I want both the actual code and the results displayed in the document.
 
 
 ```{r setup}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      comment = "#>",
+                      collapse = TRUE,
+                      fig.width = 6, fig.asp = 0.618, fig.align = "center",
+                      out.width = "70%")
 ```
 
 I then follow with a chunk that loads all libraries required for my analysis.
@@ -57,7 +64,7 @@ you have the hammer and can use it whenever you like. The hammer is you the
 library that you install (buy) once and then load into your R workspace (use)
 whenever you have a task that can be accomplished with that hammer.
 
-## 2. Reading your data
+# Reading your data
 To analyse the data, we will first need to read it into the R workspace.
 We can do this with the `read_csv` function as below. Whenever we use a function,
 there are two possible outcomes that we might want to see:
@@ -93,15 +100,15 @@ coord <- read_csv(file_coordinates)
 `read_csv()` prints out a column specification that gives the name and type of
 each column.
 
-#### 2.1 Exercises
+## Exercises
 1. Have a look at the `file_coordinates` object by creating a new chunk,
 typing `file_coordinates` and executing the code chunk. What did the `file.path`
    function do?
 2. In the same chunk, have a look at what the the `coord` object looks.
 
 
-## 3. Data and object types
-### 3.1 Data types
+# Data and object types
+## Data types
 The most common data types in R are:
     
 * `int` stands for integers i.e 1, 2, 3.
@@ -111,7 +118,7 @@ The most common data types in R are:
 * `fctr` stands for factors, which R uses to represent categorical variables
 with fixed possible values.
 
-### 3.2 Object types
+## Object types
 There are many different data types in R. For the purpose of data visualisation
 and this workshop, we will only work with two object types:
 
@@ -126,12 +133,12 @@ work with them and might require actual data.frames; For the majority of our
 analyses and visualisations we will work with tibbles.
 
 
-### 3.3 Exercises: 
+## Exercises: 
 1. Which data types are present in our dataset?
 2. How many observations and variables are in our dataset?
 3. What are the variables?
 
-## 4. A recipe for generating graphs with ggplot2
+# A recipe for generating graphs with ggplot2
 
 1. Setting up a coordinate system with the function `ggplot()`: provide the
   dataset to use in the graph
@@ -151,20 +158,20 @@ analyses and visualisations we will work with tibbles.
       * `geom_histogram` adds a histogram layer
       * `geom_boxplot` adds a boxplot layer
 
-### 4.1 Our first plot
+## Our first plot
 
 ```{r first plot}
 p <- ggplot(data=coord)
 p + geom_point(mapping=aes(x=x.coordinate, y=y.coordinate))
 ```
 
-#### 4.1.1 Exercises
+### Exercises
 1. Run ggplot(data = coord). What do you see?
 2. What makes this simple plot look very different from the map that we want 
   to achieve?
 3. What other information in our data object `coord` could we use?
 
-### 4.2 Mapping additional aesthetics
+## Mapping additional aesthetics
 To map additional information onto our 2d scatter plot, ggplot2 makes use of
 aesthetics. We have already seen aesthetics in the example above, where we
 mapped the `x.coordinate` and `y.coordinate` to the x- and y-axis using
@@ -178,7 +185,7 @@ Let's start by introducing color to the plot. As in the original publication,
 we can color the points in our plot by cluster name. We do this by simpling 
 specifying the color aestetic in the mapping:
 
-```{r color aes, echo=TRUE}
+```{r color aes}
 p + geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster))
 ```
 
@@ -188,7 +195,7 @@ aesthetic, `ggplot2` selects a reasonable scale and constructs a legend that
 explains the mapping between levels and variable values, in this case color
 and cluster. However, we can also provide our own color-scheme.
 
-### 4.3 Setting scales
+## Setting scales
 Adding scales to `ggplot` objects follows the same scheme as adding layers: we
 add the scale to the existing object by the `+` operator. Similar to `geom_xxx`,
 we have `scale_xxx_yyy`: xxx specifies the aestetic for which we are providing
@@ -212,12 +219,13 @@ The [colorbrewer website](http://colorbrewer2.org/) provides a great resource
 to pick appropriate color scales.
 
 `ggplot2` has direct access to these color schemes:
-```{r}
-display.brewer.all()
+```{r brewer, fig.asp = 2.5, echo = FALSE}
+par(mar = c(0, 3, 0, 0))
+RColorBrewer::display.brewer.all()
 ```
 
 
-```{r color scale, echo=TRUE}
+```{r color scale}
 p +
   geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
   scale_color_brewer(type="qual", palette = "Set3")
@@ -225,13 +233,13 @@ p +
 To set an aesthetic manually, you move it outside the mapping argument and 
 specify the level:
 
-```{r manual aesthetic, echo=TRUE}
+```{r manual aesthetic}
 p +
   geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster), shape=17) +
   scale_color_brewer(type="qual", palette = "Set3") 
 ```
 
-#### 4.3.1 Exercises
+### Exercises
 1. Try changing the cluster aesthetic to `size` and `shape`. Does this convey
 the same level of information as a color scale?
 2. What other variable in our dataset would be well represented by a `shape`
@@ -246,18 +254,18 @@ p +
 ```
 
 5. Why does this code not color all points in red?
-```{r, echo=TRUE}
+```{r}
 p +
   geom_point(aes(x=x.coordinate, y=y.coordinate, color="red")) 
 ```
 
-### 4.4 Setting labels and themes
+## Setting labels and themes
 So far, we have been concerned with the data layers of the plot, using
 `geom_xxx` to visualise different variables and `scale_xxx_yyy` to customise
 them. In the following section, we will have a look at customising the 'canvas'
 of the plot, i.e. the background, axis labels etc.
 
-#### 4.4.1 Coordinate system
+### Coordinate system
 Looking at the antigenic map (Figure 1 in the Smith *et al* (2004) paper), we
 notice that their axis ratio of 1:1, ensuring that one unit on the y-axis is 
 equivalent to one unit on the y-axis. Our plot has a different ratio. Based on
@@ -273,7 +281,7 @@ p +
   coord_fixed()
 ```
 
-#### 4.4.2 Labels
+### Labels
 Currently, the axis and legend labels in our plot are simply the name of
 the variables we mapped to the aesthetics. We can change the axis labels by
 providing arguments to the `labs` layer. Specifically, x and y axis
@@ -285,14 +293,14 @@ to specify the aesthetic we mapped it to, in this `color`.
 p + 
   geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
   scale_color_brewer(type="qual", palette = "Set3") +
-  labs(xlab="Dimension 1 [AU]",
-       ylab="Dimension 2 [AU]",
+  labs(x="Dimension 1 [AU]",
+       y="Dimension 2 [AU]",
        title="Antigenic cartography",
        color="Cluster") +
   coord_fixed()
 ```
 
-#### 4.4.3 Themes
+### Themes
 Finally, we can customise the non-data components of our plot. While the
 developers of `ggplot2` had a strong preference for the default grey background,
 this is not to everyone's liking. As with everything else you've seen so far,
@@ -303,21 +311,49 @@ to change to a white background.
 p + 
   geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
   scale_color_brewer(type="qual", palette = "Set3") +
-  xlab("Dimension 1 [AU]") +
-  ylab("Dimension 2 [AU]") +
-  ggtitle("Antigenic cartography") +
+  labs(x="Dimension 1 [AU]",
+       y="Dimension 2 [AU]",
+       title="Antigenic cartography",
+       color="Cluster") +
   coord_fixed() +
   theme_bw()
 ```
 
-#### 4.4.4 Exercises
+### Exercises
 1. What other coordinate system options exist? Hint: type `?coord_` in a new
 chunk and press tab to see other options.
 2. Rename the legend title for the `shape` aesthetic
-3. Test different themes and see how it effects to plot, for instance use
+3. Test different themes and see how it effects the plot, for instance use
 `theme_void`, `theme_dark` and `theme_classic`. Similar to Exercise 1, you can 
 type `?theme_` and tab to see other possible build in themes.
 
+```{r echo = FALSE, fig.cap = "The eight themes built-in to ggplot2."}
+#knitr::include_graphics("images/visualization-themes.png")
+```
+## Saving your plots
+You can save your plots with the `ggsave` function. `ggsave` will save the most
+recent plot to your project directory. As argument we only have to provide the
+name of the file we want to save it to. `ggsave` will determine the format
+of the output file based on the file ending of the filename that you provide.
+For instance, the code chunk below will save our most recent plot to a pdf
+document named "antigenic_cartography.pdf". 
 
+```{r save plots}
+ggsave(filename="antigenic_cartography.pdf")
+```
 
+Not only does `ggsave` determine the format of the file from the name, it also
+determines the size of the file from the size we chose for displaying the plot
+in out analysis. To make it reproducible, it is good practice to specify the
+size and units. 
+
+```{r save plots parameters}
+ggsave(filename="antigenic_cartography.pdf", width=5, height=8, unit="cm")
+```
+**Note**: `ggsave` overwrites the previous file of that name without warning!
+
+### Exercises
+1. Save the plot as png and jpeg.
+2. Change the size of the plot with width and height; what happens to figure
+labels and legends?
 
