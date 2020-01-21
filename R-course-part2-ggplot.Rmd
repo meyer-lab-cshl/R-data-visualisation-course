@@ -3,15 +3,15 @@ title: 'Data visualisation - part 2: visualisation with ggplot2'
 author: "Hannah Meyer"
 date: "01/08/2020"
 output:
+  pdf_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
   html_notebook:
     number_sections: yes
     toc: yes
     toc_depth: 3
     toc_float: yes
-  pdf_document:
-    number_sections: yes
-    toc: yes
-    toc_depth: 3
   html_document:
     df_print: paged
     toc: yes
@@ -159,7 +159,7 @@ In the following chunk, we pass the filename of the data that we want to load to
 `read_csv` function and assign the ouput to a new object called `coord`.
 
 ```{r paths}
-coord <- read_csv("2004_Science_Smith_data.csv")
+coord <- read_csv("data/2004_Science_Smith_data.csv")
 ```
 `read_csv()` prints out a column specification that gives the name and type of
 each column.
@@ -572,7 +572,7 @@ We use the `geom_sf` to display the world map and a points layer with
 
 
 ```{r world coordinates}
-locations <- read_csv("locations.csv")
+locations <- read_csv("data/locations.csv")
 world <- ne_countries(scale = "medium", returnclass = "sf")
 
 g <- ggplot()
@@ -593,4 +593,3 @@ distribution of measurements per type and year. What happens if you choose
 visualisation of the data. Go back to using `geom_jitter` and play with the
 `width` argument to customise your plot.
 4. What would be a good `theme` for the world map? Add it to the plot. 
-
