@@ -1,18 +1,52 @@
 ---
-title: "Data visualisation - part 1: visualisation with ggplot2"
+title: 'Data visualisation - part 1: visualisation with ggplot2'
 author: "Hannah Meyer"
 date: "01/08/2020"
 output:
   html_notebook:
-    toc: true
+    number_sections: yes
+    toc: yes
     toc_depth: 3
-    toc_float: true
-    number_sections: true
+    toc_float: yes
   pdf_document:
-    toc: true
+    number_sections: yes
+    toc: yes
     toc_depth: 3
-    number_sections: true
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_depth: '3'
 ---
+
+# Background: Antigenic cartography
+
+Antigenic Cartography is the process of creating maps that reflect the antigenic
+properties of a pathogen. In this course, we will use antigenic cartography 
+data used to map the antigenic evolution of influenza viruses. 
+
+To create antigenic maps, measurements of laboratory binding assays (e.g. ELISA
+or hemagglutination inhibition assays) are converted into a coordinate space in
+which the distance between points reflects their similarity in the original
+assay. For instance, to create an antigenic map of influenza viruses, antigens
+and sera are titrated in a hemagglutination inhibition (HI) assay.
+The HI assay tests the ability of influenza viruses to agglutinate red blood
+cells and the ability of animal antisera raised against the same or related
+strains to block this agglutination. Sera with similar abilites to block
+agglutination will be in close proximity in the antigenic map and vice versa.
+
+Smith *et al* (2004) mapped the antigenic evolution of human influenza A (H3N2)
+viruses, which have been a major cause of influenza epidemics since the 1968
+Hong Kong influenza pandemic. We will use their data of 323 HI measurements and
+antigenic cooridinates derived from viruses in world-wide circulation from
+1968 to 2003, which created the following map:
+
+```{r echo = FALSE, fig.align="center"}
+knitr::include_graphics("images/antigenic-map.jpg", dpi=500)
+```
+
+At the end of this course, you will be able to recreate this map, plot
+the distribution of measurements counts over time and visualise the location of
+virus processing on a word map.
 
 # Setting up
 
