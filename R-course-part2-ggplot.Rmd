@@ -462,7 +462,7 @@ For instance, the code chunk below will save our most recent plot to a pdf
 document named "antigenic_cartography.pdf". 
 
 ```{r save plots}
-ggsave(filename="antigenic_cartography.pdf")
+ggsave(filename="results/antigenic_cartography.pdf")
 ```
 
 Not only does `ggsave` determine the format of the file from the name, it also
@@ -471,7 +471,8 @@ in out analysis. To make it reproducible, it is good practice to specify the
 size and units. 
 
 ```{r save plots parameters}
-ggsave(filename="antigenic_cartography.pdf", width=5, height=8, unit="cm")
+ggsave(filename="results/antigenic_cartography.pdf", width=5, height=8,
+       unit="cm")
 ```
 **Note**: `ggsave` overwrites the previous file of that name without warning!
 
