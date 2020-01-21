@@ -1,5 +1,5 @@
 ---
-title: 'Data visualisation - part 1: visualisation with ggplot2'
+title: 'Data visualisation - part 2: visualisation with ggplot2'
 author: "Hannah Meyer"
 date: "01/08/2020"
 output:
@@ -15,7 +15,7 @@ output:
   html_document:
     df_print: paged
     toc: yes
-    toc_depth: '3'
+    toc_depth: 3
 ---
 
 # Background: Antigenic cartography
