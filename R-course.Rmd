@@ -1,5 +1,5 @@
 ---
-title: "R Notebook"
+title: "Data visualisation - part 1: visualisation with ggplot2"
 author: "Hannah Meyer"
 date: "01/08/2020"
 output:
