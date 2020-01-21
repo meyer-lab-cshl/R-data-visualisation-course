@@ -16,6 +16,7 @@ output:
     df_print: paged
     toc: yes
     toc_depth: 3
+bibliography: bibliography.bib
 ---
 
 # Background: Antigenic cartography
@@ -34,9 +35,10 @@ cells and the ability of animal antisera raised against the same or related
 strains to block this agglutination. Sera with similar abilites to block
 agglutination will be in close proximity in the antigenic map and vice versa.
 
-Smith *et al* (2004) mapped the antigenic evolution of human influenza A (H3N2)
-viruses, which have been a major cause of influenza epidemics since the 1968
-Hong Kong influenza pandemic. We will use their data of 323 HI measurements and
+[Smith *et al* (2004)](https://science.sciencemag.org/content/305/5682/371)
+mapped the antigenic evolution of human influenza A (H3N2) viruses, which have
+been a major cause of influenza epidemics since the 1968 Hong Kong influenza
+pandemic @Smith2004. We will use their data of 323 HI measurements and
 antigenic cooridinates derived from viruses in world-wide circulation from
 1968 to 2003, which created the following map:
 
@@ -155,7 +157,11 @@ proves really useful whenever you want to use a new function or you want
 to look up some examples of how to use the function.
 
 # Reading your data
-In the following chunk, we pass the filename of the data that we want to load to
+For this tutorial, I have downloaded the data from Smith *et al* (2004) (
+made available at the following [http://www.antigenic-cartography.org/)](link))
+and formated for us to work with. 
+In the following chunk, we pass the filename of this formated data set, located
+in the data folder of your project, as the argument to the
 `read_csv` function and assign the ouput to a new object called `coord`.
 
 ```{r paths}
@@ -173,12 +179,16 @@ typing `coord` and executing the code chunk.
 
 # Data and object types
 The objective of this course is data visualisation and we will not spend a huge
-amount of time on learning R's data structures. In the following, we will just
-look at a few basic data types and objects that we will encounter in this
-course: 
+amount of time on learning R's basic obeject structures. Instead, we will
+focus on the functions and data objects from R `tidyverse`. The
+[tidyverse](https://www.tidyverse.org/) is an 'opinionated collection of R
+packages designed for data science. All packages share an underlying design
+philosophy, grammar, and data structures.' While there are many other options
+for wrangling your data, formating and plotting, I would suggest to learn this
+from the beginning as it is very neat and makes the code very readable. 
 
 ## Data types
-The most common data types in R are:
+The most common data types in R (base R and tidyverse) are:
     
 * `int`, which stands for integers i.e 1, 2, 3;
 * `dbl`, which stands for doubles, or real numbers i.e. 1.2, 1.7, 9.0;
@@ -193,9 +203,10 @@ and this workshop, we will only work with two object types:
 
 * `data.frame`: a list of variables with the same number of observations.
 Variables are in columns, observations in rows. Rows have unique rownames.
-* `tibble`:  tibbles are 'opinionated data frames' with an improved printing
-  display, stricter rules for re-formating that aid in avoiding bugs and no
-  rownames.
+data.frames are one common data structure in base R;
+* `tibble`:  tibbles are 'opinionated data frames from the tidyverse' with an
+improved printing display, stricter rules for re-formating that aid in avoiding
+bugs and no rownames.
 
 **Note**: Tibbles are newer than data.frames and some old functions will not
 work with them and might require actual data.frames; For the majority of our
@@ -592,4 +603,6 @@ distribution of measurements per type and year. What happens if you choose
 4. Change `geom_jitter` to `geom_point` to see why zgeom_jitter is a better
 visualisation of the data. Go back to using `geom_jitter` and play with the
 `width` argument to customise your plot.
-4. What would be a good `theme` for the world map? Add it to the plot. 
+4. What would be a good `theme` for the world map? Add it to the plot.
+
+# References
