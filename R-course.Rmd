@@ -3,24 +3,57 @@ title: "R Notebook"
 author: "Hannah Meyer"
 date: "01/08/2020"
 output:
-  pdf_document:
-    toc: true
-    toc_depth: 3
-    number_sections: true
   html_notebook:
     toc: true
     toc_depth: 3
     toc_float: true
     number_sections: true
+  pdf_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
 ---
 
 # Setting up
+
+## Starting a Rproject for your analysis
+First, we will set up a project, where you will keep all files
+associated with that project - inlcuding your analysis reports, input data,
+results and figures. 
+
+* In R studio click *File > New Project*.
+* Choose *Existing directory*, then click on *Browse* to find the folder that
+you created with the course material
+* Click *Create Project*
+
+In your files plane in R studio you can now see all the files you downloaded 
+for this workshop. We will be able to easily read them into R and save results
+there. 
+
+There are other ways of specifying the folders from which you read and where you
+write results and save plots to, but I would highly recommend this strategy.
+It keeps everything neat and you have all the important parts of your analysis
+in one place.
+
+R studio can be customised and I leave this to everyone to figure out what
+works best. However, I would recommend changing one default setting, which will
+ensure that when you start working in your project, you start of with a clean
+slate and none of previously computed data sticks around and confuses your
+analysis.
+
+For this setting go to *RStudio > Preferences* (on Mac) and ** (windows/unix).
+In *General* untick *restore .RData into workspace at startup*. 
+
+We are all set now to go ahead with your first analyis and data visualisation
+in R!
+
+## Setting up an analysis report
 The document you are looking at right now is a R Notebook. R Notebooks allow
 us to interleaf text describing our analysis with the R code that
 actually contains the analyses commands. 
 
 The text follows some simple markdown rules (for instance bold header sections
-etc, which we won't go into detail here). Important for us at this stage is
+etc, which we will not go into detail here). Important for us at this stage is
 that whenever we want to include analysis code into the document, we have
 to create an R code *chunk*. To include a new *chunk* click the _Insert_ buttom
 at the top of your editor window and select _R_.
@@ -31,7 +64,8 @@ have to worry about all of these. I mention this here, as the following and
 first chunk of our document contains some basic options that I want to have
 applied to all chunks in the rest of the document. Specifically, it tells R
 studio that when I prepare this document for sharing with you as a pdf, that
-I want both the actual code and the results displayed in the document.
+I want both the actual code and the results displayed in the document. It also
+specifies the width and alignment of the figures in the final document.
 
 
 ```{r setup}
@@ -44,7 +78,7 @@ knitr::opts_chunk$set(echo = TRUE,
 
 I then follow with a chunk that loads all libraries required for my analysis.
 The following chunk loads the libraries that you installed as a preparation for
-the course into our R workspace:
+the course into your R workspace:
 
 ```{r libraries, message=FALSE}
 library("tidyverse")
@@ -55,68 +89,69 @@ library("RColorBrewer")
 ```
 
 **Note**: Libraries only have to be installed once, however, they will have to
-be loaded into the R workspae whenever we open a new R session. Think of the
+be loaded into the R workspace whenever we open a new R session. Think of the
 libraries you install as tools that you buy: you buy a hammer the first time you
 realise you
 want to hang a picture and need a hook in the wall. Once you bought it, you need
 to actually bring it to the room where you want to hang the picture. After that,
-you have the hammer and can use it whenever you like. The hammer is you the
+you have the hammer and can use it whenever you like. The hammer is the
 library that you install (buy) once and then load into your R workspace (use)
 whenever you have a task that can be accomplished with that hammer.
 
+# Data input
+The first step in data analysis with R is to read the data into the R workspace.
+We can do this with the `read_csv` function. 
+
+## A primer to R functions
+Functions automate common tasks such as reading files into R, creating a 
+histogram of your data and saving that histogram in a pdf document.
+
+Functions take a set of arguments, evaluate them and return the result.
+There are two possible outcomes that we might want to see when we use a
+function:
+
+If we simply want to see the result of the function displayed after execution,
+we just type the command and execute it. If we want to store the result in a
+variable for future use, we have to assign the outcome of a function into an
+object by using the assign operator `<-`. 
+
+To see a description of the function, its arguments and results, use the help
+function `?` by typing `?function_name` in the R console. This help function 
+proves really useful whenever you want to use a new function or you want
+to look up some examples of how to use the function.
+
 # Reading your data
-To analyse the data, we will first need to read it into the R workspace.
-We can do this with the `read_csv` function as below. Whenever we use a function,
-there are two possible outcomes that we might want to see:
+In the following chunk, we pass the filename of the data that we want to load to
+`read_csv` function and assign the ouput to a new object called `coord`.
 
-1. we simply want to see the result of the function displayed after execution;
-2. we want to store the result in a variable for future use. 
-
-To assign the outcome of a function into a variable, we use the assign operator
-`<-`. To simply see the results without later access to it, we just type the
-command and execute it.
-
-Whenever I set up a new analyses, I usually specify the directory where all the
-data are stored and to which we will write the results at the beginning
-of my analysis and save it in a object. I use this object in conjuction with
-the function `file.path` to specify where I am reading data from and where I
-will write data to. Using this strategy, I always know where the data that
-belongs to the analysis is stored and if ever I change my folder structure
-changes, I only need to change the directory specification once,
-(when declaring the variable) and not many times throughout the code. 
-
-To put this all together, in the following chunk, we first assign the path
-to our data directory into the object `datadir`, a name of my own chosing and
-create a object that stores the name of our input datafile. We then pass the
-new `file_coordinates` object to the `read_csv` function and assign
-the ouput to a new object called `coord`.
-
-```{r paths, message=FALSE}
-datadir <- "~/Teaching"
-file_coordinates <- file.path(datadir, "2004_Science_Smith_data.csv")
-
-coord <- read_csv(file_coordinates)
+```{r paths}
+coord <- read_csv("2004_Science_Smith_data.csv")
 ```
 `read_csv()` prints out a column specification that gives the name and type of
 each column.
 
 ## Exercises
-1. Have a look at the `file_coordinates` object by creating a new chunk,
-typing `file_coordinates` and executing the code chunk. What did the `file.path`
-   function do?
-2. In the same chunk, have a look at what the the `coord` object looks.
+1. Use the help function`?` to have a look at the documentation of `read_csv`.
+2. Have a look at the `coord` object by creating a new chunk,
+typing `coord` and executing the code chunk.
+3. Do you find the message printed by `read_csv` represented in `coord`?
 
 
 # Data and object types
+The objective of this course is data visualisation and we will not spend a huge
+amount of time on learning R's data structures. In the following, we will just
+look at a few basic data types and objects that we will encounter in this
+course: 
+
 ## Data types
 The most common data types in R are:
     
-* `int` stands for integers i.e 1, 2, 3.
-* `dbl` stands for doubles, or real numbers i.e. 1.2, 1.7, 9.0
-* `chr` stands for character vectors, or strings i.e. "a", "b", "word"
-* `lgl` stands for logical, vectors that contain only TRUE or FALSE.
-* `fctr` stands for factors, which R uses to represent categorical variables
-with fixed possible values.
+* `int`, which stands for integers i.e 1, 2, 3;
+* `dbl`, which stands for doubles, or real numbers i.e. 1.2, 1.7, 9.0;
+* `chr`, which stands for character vectors, or strings i.e. "a", "b", "word";
+* `lgl`, which stands for logical, vectors that contain only TRUE or FALSE;
+* `fctr`, which stands for factors, which R uses to represent categorical
+variables with fixed possible values.
 
 ## Object types
 There are many different data types in R. For the purpose of data visualisation
@@ -124,7 +159,7 @@ and this workshop, we will only work with two object types:
 
 * `data.frame`: a list of variables with the same number of observations.
 Variables are in columns, observations in rows. Rows have unique rownames.
-* `tibble`:  tibbles are opinionated data frames with an improved printing
+* `tibble`:  tibbles are 'opinionated data frames' with an improved printing
   display, stricter rules for re-formating that aid in avoiding bugs and no
   rownames.
 
@@ -139,24 +174,30 @@ analyses and visualisations we will work with tibbles.
 3. What are the variables?
 
 # A recipe for generating graphs with ggplot2
+In the following section, we will generate our first plots using the `ggplot2`
+package. Data visualisation in `ggplot2`, however simple or complex, follows
+a general recipe:
 
 1. Setting up a coordinate system with the function `ggplot()`: provide the
   dataset to use in the graph
-1. Adding layers to `ggplot()`: `geom_xxx()` functions add graphical layers to
-  your plot:
+1. Adding layers with `geom_xxx()` functions:
   * layers are quite literally added to `ggplot()` object, by using the `+` 
-    operator
+    operator;
   * each geom function expects a mapping argument which defines how variables
     are mapped to visualisation. The mapping argument is provided with `aes()`,
     where the x and y arguments describe which variables to map to the x and y
     axes. ggplot2 looks for the mapped variables in the data argument to
-    `ggplot()`.
+    `ggplot()`;
   * There are many geom functions that each add a different type of
     layer to a plot. Their names are very descriptive, for instance:
       * `geom_point` adds a layer of points to the coordinate system,
-        effectively creating a scatterplot
-      * `geom_histogram` adds a histogram layer
-      * `geom_boxplot` adds a boxplot layer
+        effectively creating a scatterplot;
+      * `geom_histogram` adds a histogram layer;
+      * `geom_boxplot` adds a boxplot layer.
+
+**Note**: The add operator `+` can never be at the start of a line! When adding
+multiple layers to a plot, we will always end the layer line with the `+` sign,
+never start a new layer with a `+`.
 
 ## Our first plot
 
@@ -165,7 +206,7 @@ p <- ggplot(data=coord)
 p + geom_point(mapping=aes(x=x.coordinate, y=y.coordinate))
 ```
 
-### Exercises
+## Exercises
 1. Run ggplot(data = coord). What do you see?
 2. What makes this simple plot look very different from the map that we want 
   to achieve?
@@ -204,7 +245,7 @@ the scale, yyy specifies the type of scale we want. For instance:
   * `scale_color_continuous` sets a continuous scale for the asthetic color;
   * `scale_shape_discrete` sets a discrete scale for the asthetic shape.
 
-When selecting a color-scale (or any scale really), we need to consider what
+When selecting a scale, we need to consider what
 type of data we are displaying and what message we want to convey:
   
   * qualitative data: unordered, distinct categories, as in our example cluster
@@ -215,6 +256,7 @@ type of data we are displaying and what message we want to convey:
     well for instance correlations that range from -1 to 1, where the mid-range
     around 0 ie no correlation are equally important to be visualised
 
+### Color scales
 The [colorbrewer website](http://colorbrewer2.org/) provides a great resource
 to pick appropriate color scales.
 
@@ -224,14 +266,35 @@ par(mar = c(0, 3, 0, 0))
 RColorBrewer::display.brewer.all()
 ```
 
-
 ```{r color scale}
 p +
   geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
   scale_color_brewer(type="qual", palette = "Set3")
 ```
-To set an aesthetic manually, you move it outside the mapping argument and 
-specify the level:
+
+### Shape scales
+There are 25 point shapes available in R:
+
+```{r point shapes, echo=FALSE}
+positions <- tibble(y=rev(c(rep(1,6),rep(2,5), rep(3,5), rep(4,5), rep(5,5))),
+                    x=c(rep(1:5,5),6),
+                    text=0:25)
+shapes <- ggplot(data=positions)
+shapes + geom_point(aes(x=x,y=y),
+                    shape=0:25, size=5, fill="orange", color="blue") +
+  geom_text(aes(x=x,y=y+0.3,label=text), hjust=0.5, vjust=0.5) +
+  theme_void()
+```
+We can use the shape aesthetic and scale in analogy to how we
+specified color.
+
+**Note**: Shapes 0-20 work in conjunction with the color aestetic, 
+shapes 21-25 with the color and fill aesthetic. 
+
+## Manual aesthetics
+In addition, we could also decide that we would like to display all our points
+in the data set as number 17 triangles. To set an aesthetic manually, you move
+it outside the mapping argument and specify the level:
 
 ```{r manual aesthetic}
 p +
@@ -252,12 +315,13 @@ p +
   geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
   scale_color_brewer(type="qual", palette = "Set1")
 ```
-
 5. Why does this code not color all points in red?
 ```{r}
 p +
   geom_point(aes(x=x.coordinate, y=y.coordinate, color="red")) 
 ```
+6. Advanced: Change the overall shape of points to number 24 triangles, than
+color by cluster and fill by type.
 
 ## Setting labels and themes
 So far, we have been concerned with the data layers of the plot, using
@@ -326,10 +390,24 @@ chunk and press tab to see other options.
 3. Test different themes and see how it effects the plot, for instance use
 `theme_void`, `theme_dark` and `theme_classic`. Similar to Exercise 1, you can 
 type `?theme_` and tab to see other possible build in themes.
+4. Why does this not work? 
 
-```{r echo = FALSE, fig.cap = "The eight themes built-in to ggplot2."}
+```{r fail, eval=FALSE}
+p + 
+  geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
+  scale_color_brewer(type="qual", palette = "Set3") +
+  labs(x="Dimension 1 [AU]",
+       y="Dimension 2 [AU]",
+       title="Antigenic cartography",
+       color="Cluster") +
+  coord_fixed()
+  + theme_light()
+```
+
+```{r echo = FALSE}
 #knitr::include_graphics("images/visualization-themes.png")
 ```
+
 ## Saving your plots
 You can save your plots with the `ggsave` function. `ggsave` will save the most
 recent plot to your project directory. As argument we only have to provide the
@@ -356,4 +434,129 @@ ggsave(filename="antigenic_cartography.pdf", width=5, height=8, unit="cm")
 1. Save the plot as png and jpeg.
 2. Change the size of the plot with width and height; what happens to figure
 labels and legends?
+
+# Beyond scatter plots
+In **section 4**, we have learned the basic recipes for generating a plot with
+`ggplot2`. We created a 2D scatter plot, encoding visual information in a 
+color and shape scale and made sure we convey the right message by ensuring
+appropriate labels and coordinate systems.
+
+In the following section, we will get to know a couple more plot types.
+
+## Bar charts and histograms
+Bar charts and histogram visualise the number of observations (count) for a
+specified variable, typically with the variable on the x-axis and the count on
+the y-axis. For histograms, the x-axis is divided into bins and the number of
+observations in each bin is counted. Bar charts are a special case of histogram,
+where the bin width is 1, i.e. the counts at each value of the variables are
+displayed. 
+Bar charts are best described by the calling the help function `?geom_bar`:
+
+    There are two types of bar charts: geom_bar() and geom_col(). geom_bar()
+    makes the height of the bar proportional to the number of cases in each
+    group [..]. If you want the heights of the bars to represent values in the
+    data, use geom_col() instead. geom_bar() [...] counts the number of cases at
+    each x position. geom_col() [...] leaves the data as is.
+
+In the following, we plot the number of antigen measurements per year and color
+them by cluster. As we want the plotting function to figure out the counts, 
+we use `geom_bar`. For consistency to our previous plots, we use them same 
+theme and color scheme; note, we use `geom_fill` (not `geom_color` as above) to
+fill the bars with the specified color.
+In addition to the aesthetics, we also specify positions for our bar chart. To
+display bars next to each other, we have to specify `position_dodge`,
+and setting `preserve="single"`, keeps a constant width for each bar. More on
+this in the exercises to this section.
+
+```{r }
+p + geom_bar(aes(x=year, fill=cluster),
+             position=position_dodge(preserve="single")) +
+  scale_fill_brewer(type="qual", palette = "Set3") +
+  theme_bw()
+```
+We can use the same set-up with `geom_histogram`, to visualise the distribution
+of antigenic measurements in larger time intervals. The bin width specifies the
+range over which to summarise the variable. Again, the help function gives 
+good insight with `?geom_histogram`:
+
+    binwidth    [...] You should always override this value, exploring multiple
+                widths to find the best to illustrate the stories in your data
+                [...].
+
+```{r histogram}
+p + geom_histogram(aes(x=year, fill=cluster),
+             position=position_dodge(preserve="single"),
+             binwidth = 10) +
+  scale_fill_brewer(type="qual", palette = "Set3") +
+  theme_bw()
+```
+
+## Boxplots
+Below, we take a different look at the distribution of antigenic measurements
+by year, using a boxplot.
+
+"The boxplot compactly displays the distribution of a continuous variable. It
+visualises five summary statistics (the median, two hinges and two whiskers),
+and all "outlying" points individually." [`?geom_boxplot`].
+
+We treat `year` as a continuous variable and show its distribution split by the
+type of measurement.
+
+To show both the summary of the distribution (boxplot) and the actual data, we 
+can add a `geom_jitter` to the plot. It plots the original y-values and adds 
+a jitter to the x-values to avoid overplotting.
+
+ 
+```{r }
+p + geom_boxplot(aes(x=type, y=year, color=type)) +
+  geom_jitter(aes(x=type, y=year, color=type)) +
+  theme_bw()
+```
+## Geographical maps
+So far, we have worked with visualisations of continuous, discrete and
+categorical variables. We have worked with the `year` (discrete/continuous),
+`cluster`, `type` (both categorical), `x.coordinate` and `y.coordinate` (both
+continuous) variables in out data set and used these to display the antigenic
+maps and distribution of measurements across time, separated by both cluster
+and type. For all these observations, we have an additional variable, the
+location of data generation. In the following, we will see how we can use
+`ggplot2` to visualise geographic data. 
+
+First, we read a file that contains the coordinates (latitude and longitude) of
+all locations that we find in the `location` of our coord object. We then
+use the `ne_countries` of the `rnaturalearth` package that we loaded in the
+beginning to create an object that countains coordinates of all countries.
+
+As with above, we will then create a `ggplot` object. So far, we provided the
+data that we want the visualisation to be applied to in the `ggpot` call.
+In this case, we have two different data sets that we want to visualise,
+the world map and the locations. In this case, we can also specify the
+appropriate dataset to each geom separately.
+
+We use the `geom_sf` to display the world map and a points layer with
+`geom_point` to visualise the locations.
+
+
+```{r world coordinates}
+locations <- read_csv("locations.csv")
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+g <- ggplot()
+g + geom_sf(data = world) +
+  geom_point(data=locations, aes(x=lng, y=lat), color="blue")
+```
+
+## Exercises
+1. Test different options for the `position` argument of `geom_bar`. Hint:
+use the Details paragraph in `?geom_bar` to find a description about possible
+options.
+2. What happens when you choose `preserve="total"` in `position_dodge` of
+`geom_histogram`? 
+3. Customise the color scale and plot labels in the boxplot showing the 
+distribution of measurements per type and year. What happens if you choose
+`aes(fill)` instead of `aes(color)`?
+4. Change `geom_jitter` to `geom_point` to see why zgeom_jitter is a better
+visualisation of the data. Go back to using `geom_jitter` and play with the
+`width` argument to customise your plot.
+4. What would be a good `theme` for the world map? Add it to the plot. 
 
