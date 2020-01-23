@@ -2896,76 +2896,178 @@ div.tocify {
 <!-- rnb-text-begin -->
 <div id="introduction" class="section level1">
 <h1><span class="header-section-number">1</span> Introduction</h1>
-<p>In the previous tutorial, you have learned how to visualise your data, from simple scatter plots with default settings to compound figures with elaborate color schemes and labels. For all of these, we used the data from Smith <em>et al</em> (2004) (made available at the following <a href="link">http://www.antigenic-cartography.org/)</a>). I mentioned briefly in the previous exercises, that I had formated the data for us to work with. What I experssed here in a half-sentence, usually contains a lot of work, often more than the actual analysis: cleaning your data, bringing it into the right format, checking it for sanity. In the following sections, we will learn how to use ‘dplyr’ to reformat data into a ‘tidy’ format that we can use for visualisation and analysis.</p>
-<p>For a more detailed description and additional examples, refer to chapter 5 in Hadley Wickham book ‘R for Data Science’ <span class="citation">Wickham and Grolemund (2017)</span>. I would generally highly recommend this book, as it introduces concepts we have discussed in this course and beyond - its online version is available for free <a href="https://r4ds.had.co.nz/">here</a>!</p>
+<p>In the previous tutorials, you have learned how to visualise your data, from simple scatter plots with default settings to compound figures with elaborate color schemes and labels. For all of these, we used the data from Smith <em>et al</em> (2004) (made available at the following <a href="link">http://www.antigenic-cartography.org/</a>). I mentioned briefly in the previous exercises, that I had formated the data for us to work with. What I expressed there in a half-sentence, usually contains a lot of work, often more than the actual analysis: cleaning your data, bringing it into the right format, checking it for sanity. In the following sections, we will learn how to use ‘dplyr’ to reformat data into a ‘tidy’ format that we can use for visualisation and analysis.</p>
+<p>For a more detailed description and additional examples, refer to chapter 5 in Hadley Wickham book ‘R for Data Science’ <span class="citation">(Wickham and Grolemund 2017)</span>. I would generally highly recommend this book, as it introduces concepts we have discussed in this course and beyond - its online version is available for free <a href="https://r4ds.had.co.nz/">here</a>!</p>
+<p>First, we are going to set up our analysis script,</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxua25pdHI6Om9wdHNfY2h1bmskc2V0KGVjaG8gPSBUUlVFLFxuICAgICAgICAgICAgICAgICAgICAgIGNvbW1lbnQgPSBcIiM+XCIsXG4gICAgICAgICAgICAgICAgICAgICAgY29sbGFwc2UgPSBUUlVFLFxuICAgICAgICAgICAgICAgICAgICAgIGZpZy53aWR0aCA9IDYsIGZpZy5hc3AgPSAwLjYxOCwgZmlnLmFsaWduID0gXCJjZW50ZXJcIixcbiAgICAgICAgICAgICAgICAgICAgICBvdXQud2lkdGggPSBcIjcwJVwiKVxuYGBgIn0= -->
+<pre class="r"><code>knitr::opts_chunk$set(echo = TRUE,
+                      comment = &quot;#&gt;&quot;,
+                      collapse = TRUE,
+                      fig.width = 6, fig.asp = 0.618, fig.align = &quot;center&quot;,
+                      out.width = &quot;70%&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>load the required libraries</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShcInRpZHl2ZXJzZVwiKVxubGlicmFyeShcImNvd3Bsb3RcIilcbmxpYnJhcnkoXCJzZlwiKVxubGlicmFyeShcInJuYXR1cmFsZWFydGhcIilcbmxpYnJhcnkoXCJSQ29sb3JCcmV3ZXJcIilcbmBgYCJ9 -->
+<pre class="r"><code>library(&quot;tidyverse&quot;)
+library(&quot;cowplot&quot;)
+library(&quot;sf&quot;)
+library(&quot;rnaturalearth&quot;)
+library(&quot;RColorBrewer&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>and read our dataset into R again:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29vcmQgPC0gcmVhZF9jc3YoXCJkYXRhLzIwMDRfU2NpZW5jZV9TbWl0aF9kYXRhLmNzdlwiKVxuYGBgIn0= -->
+<pre class="r"><code>coord &lt;- read_csv(&quot;data/2004_Science_Smith_data.csv&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 </div>
 <div id="dplyr-a-grammar-of-data-manipulation" class="section level1">
 <h1><span class="header-section-number">2</span> dplyr: a grammar of data manipulation</h1>
 <p>The dplyr package is a core member of the tidyverse. dplyr’s core functionality relies on six functions that let us solve the majority of data reformating. These functions, often described as the `verbs for the language of data manipulation’, are:</p>
 <ul>
-<li><code>select()</code>: to select a subset of variables;</li>
 <li><code>arrange()</code>: to change the order of observations;</li>
+<li><code>select()</code>: to select a subset of variables;</li>
 <li><code>mutate()</code>: to add new variables that are functions of existing variables;</li>
 <li><code>filter()</code>: to subset observations based on their values;</li>
 <li><code>summarise()</code>: to summarise observations to a single row;</li>
 <li><code>group_by()</code>: to change the unit of analysis from the complete dataset to individual groups.</li>
 </ul>
-<p>All verbs work in a similar fashion: * their first argument is a <code>tibble</code> or <code>data.frame</code>; * the following arguments describe the action to apply to that <code>tibble</code>/<code>data.frame</code> by specifying the variable names * the result is a new <code>tibble</code>/<code>data.frame</code>, dependent on the initial input</p>
-<p><em>Note</em>: If you want to save the results of a <code>dplyr</code> function, you have to use the assignment operator <code>&lt;-</code>, as <code>dplyr</code> function never modify their input data.</p>
+<p>All verbs work in a similar fashion:</p>
+<ul>
+<li>their first argument is a <code>tibble</code> or <code>data.frame</code>;</li>
+<li>the following arguments describe the action to apply to that <code>tibble</code>/<code>data.frame</code> by specifying the variable names</li>
+<li>the result is a new <code>tibble</code>/<code>data.frame</code>, dependent on the initial input</li>
+</ul>
+<p><strong>Note</strong>: If you want to save the results of a <code>dplyr</code> function, you have to use the assignment operator <code>&lt;-</code>, as <code>dplyr</code> functions never modify their input data.</p>
 <div id="change-the-order-of-observations-with-arrange" class="section level2">
 <h2><span class="header-section-number">2.1</span> Change the order of observations with <code>arrange()</code></h2>
 <p>Using <code>arrange()</code>, we can change the order of rows. As input, <code>arrange</code> takes a <code>tibble</code> and a set of variable names - at least one is required. It will re-arrange the observations of the <code>tibble</code> based on variable selected for re-ordering. If you provided more than one variable to order the tibble by, each additional variable will be used to break ties in the values of preceding variables.</p>
+<p>Here, we are going to order <code>coord</code> by location and year:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYXJyYW5nZShjb29yZCwgbG9jYXRpb24sIHllYXIpXG5gYGAifQ== -->
+<pre class="r"><code>arrange(coord, location, year)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>As a default, <code>arrange</code> orders the variables in ascending order. To re-order in descending order use <code>desc()</code>:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYXJyYW5nZShjb29yZCwgZGVzYyhsb2NhdGlvbiksIHllYXIpXG5gYGAifQ== -->
+<pre class="r"><code>arrange(coord, desc(location), year)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<div id="exercises" class="section level3">
+<h3><span class="header-section-number">2.1.1</span> Exercises</h3>
+<ol style="list-style-type: decimal">
+<li>How does the ouput change if you sorted by year first, then location?</li>
+<li>Sort <code>coord</code> to find when the last virus was isolated.</li>
+<li>Find the largest and smallest x.coordinate in the dataset.</li>
+</ol>
+</div>
 </div>
 <div id="select-a-subset-of-variables-with-select" class="section level2">
 <h2><span class="header-section-number">2.2</span> Select a subset of variables with <code>select()</code></h2>
-<p><code>select()</code> let’s us pick a subset of variables. In the most simple case, we specify the <code>tibble</code> from which we want to <code>select()</code> variables, followed by the names of the variables that we want to pick:</p>
+<p><code>select()</code> let’s us pick a subset of variables. In the most simple case, we specify the <code>tibble</code> from which we want to <code>select()</code> variables, followed by the names of the variables that we want to pick. For instance, we could select only names and location:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2VsZWN0KGNvb3JkLCBuYW1lLCBsb2NhdGlvbilcbmBgYCJ9 -->
+<pre class="r"><code>select(coord, name, location)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>To exclude a variable, use <code>select()</code> with the variable name preceded by a minus <code>-</code>:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2VsZWN0KGNvb3JkLCAtdHlwZSlcbmBgYCJ9 -->
+<pre class="r"><code>select(coord, -type)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>In addition to that, there a number of functions that can be used in conjunction with <code>select()</code> that let us select multiple variables with common elements in their name. These include:</p>
+<ul>
+<li>starts_with(“year”): matches names that begin with “year”.</li>
+<li>ends_with(“coordinate”): matches names that end with “coordinate”.</li>
+<li>contains(“coord”): matches names that contain “coord”.</li>
+<li>num_range(“X”, 1:3): matches X1, X2 and X3.</li>
+</ul>
+<p>Below, we select all columns that end with the word ‘coordinate’:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>To exclude a variable, use <code>select()</code> with the variable name preceded by a minus <code>-</code>.</p>
-<p>In addition to that, there a number of functions that can be used in conjunction with <code>select()</code> that let us select multiple variables with common elements in their name. These include: * starts_with(“year”): matches names that begin with “year”. * ends_with(“coordinate”): matches names that end with “coordinate”. * contains(“coord”): matches names that contain “coord”. * num_range(“X”, 1:3): matches X1, X2 and X3.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
+<div id="exercises-1" class="section level3">
+<h3><span class="header-section-number">2.2.1</span> Exercises</h3>
+<ol style="list-style-type: decimal">
+<li>What are two other ways of only selecting the <code>x.coordinate</code> and <code>y.coordinate</code> columns?</li>
+<li>Can you use <code>select</code> to move the <code>location</code> variable from second column to last?</li>
+</ol>
+</div>
 </div>
 <div id="add-new-variables-with-mutate" class="section level2">
 <h2><span class="header-section-number">2.3</span> Add new variables with <code>mutate()</code></h2>
-<p>To add new variables to a <code>tibble</code>, we use <code>mutate</code>. Again, <code>mutate</code> first expects the name of the <code>tibble</code> to which we want to add a variable, followed by the name of the new variable, an equal sign <code>=</code> and the data to add. The data has to have the same number of observations as our input <code>tibble</code> and can be created by using a transformation of an existing variable:</p>
+<p>To add new variables to a <code>tibble</code>, we use <code>mutate</code>. Again, <code>mutate</code> first expects the name of the <code>tibble</code> to which we want to add a variable, followed by the name of the new variable, an equal sign <code>=</code> and the data to add. The data has to have the same number of observations as our input <code>tibble</code> and can be created by using a transformation of an existing variable.</p>
+<p>Here we create a new variable, that contains the Euclidean distance of each antigen from the origin at (0,0):</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubXV0YXRlKGNvb3JkLCBkaXN0YW5jZT1zcXJ0KHguY29vcmRpbmF0ZV4yICsgeS5jb29yZGluYXRlXjIpKVxuYGBgIn0= -->
+<pre class="r"><code>mutate(coord, distance=sqrt(x.coordinate^2 + y.coordinate^2))</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p><em>Note</em>: <code>mutate()</code> adds the column at the end of the <code>tibble</code>; if you want it at a different position use <code>select</code> to reorder the variables afterwards.</p>
+<p><strong>Note</strong>: <code>mutate()</code> adds the column at the end of the <code>tibble</code>; if you want it at a different position use <code>select</code> to reorder the variables afterwards.</p>
+<div id="exercises-2" class="section level3">
+<h3><span class="header-section-number">2.3.1</span> Exercises</h3>
+<ol style="list-style-type: decimal">
+<li>Add a new column that contains the time difference between this year, 2020, and the year the virus was isolated.</li>
+<li>Save the result of this <code>mutate</code> in a new object.</li>
+<li>Move the new column between the <code>year</code> and <code>cluster</code> columns.</li>
+</ol>
+</div>
 </div>
 <div id="select-of-subset-of-observations-with-filter" class="section level2">
 <h2><span class="header-section-number">2.4</span> Select of subset of observations with <code>filter()</code></h2>
-<p>Using <code>select</code> we could create a subset of the input data by selecting variables. <code>filter()</code> allows us to subset our input data by observations. As a first argument it takes the name of the <code>tibble</code>; this is followed by expressions that filter observations based on their value in the specified variables. Filtering uses the standard set of comparison operators available in R.</p>
+<p><code>select</code> creates a subset of the input data by selecting variables. <code>filter()</code> allows us to subset our input data by observations. As a first argument it takes the name of the <code>tibble</code>; this is followed by expressions that filter observations based on their value in the specified variables. Filtering uses the standard set of comparison operators available in R.</p>
 <div id="comparisons" class="section level3">
 <h3><span class="header-section-number">2.4.1</span> Comparisons</h3>
-<p>Comparison operators in R: * <code>==</code>: equal to * <code>!=</code>: not equal to * <code>&gt;</code>: greater than * <code>&gt;=</code>: greater or equal than * <code>&lt;</code>: less than * <code>&lt;=</code>: less or equal than</p>
-<p><em>Note</em>: When testing for equality, make sure to use <code>==</code> and not a simple <code>=</code>!</p>
-<p>For instance, the following code let’s us select all observations of viruses in circulation after 1988:</p>
+<p>Comparison operators in R:</p>
+<ul>
+<li><code>==</code>: equal to</li>
+<li><code>!=</code>: not equal to</li>
+<li><code>&gt;</code>: greater than</li>
+<li><code>&gt;=</code>: greater or equal than</li>
+<li><code>&lt;</code>: less than</li>
+<li><code>&lt;=</code>: less or equal than</li>
+</ul>
+<p><strong>Note</strong>: When testing for equality, make sure to use <code>==</code> and not a simple <code>=</code>!</p>
+<p>For instance, the following code let’s us select all observations of viruses in circulation before 1988:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZmlsdGVyKGNvb3JkLCB5ZWFyIDwgMTk4OClcbmBgYCJ9 -->
+<pre class="r"><code>filter(coord, year &lt; 1988)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>In addition to these comparison operators, we can also use boolean operators tp filter the input data. The simplest boolean operator is intrinsic to the <code>filter</code> function: multiple arguments to <code>filter()</code> are combined with and, i.e. every expression has to be true for an observation to be kept in the output. For instance:</p>
+<p>In addition to these comparison operators, we can also use boolean operators to filter the input data. The simplest boolean operator is intrinsic to the <code>filter</code> function: multiple arguments to <code>filter()</code> are combined with <em>and</em>, i.e. every expression has to be true for an observation to be kept in the output. For instance, all observations of viruses in circulation before 1988 in BILTHOVEN.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZmlsdGVyKGNvb3JkLCB5ZWFyIDwgMTk4OCwgbG9jYXRpb24gPT0gXCJCSUxUSE9WRU5cIilcbmBgYCJ9 -->
+<pre class="r"><code>filter(coord, year &lt; 1988, location == &quot;BILTHOVEN&quot;)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>Any more complicated combinations, like in circulation before 1987 but not BILTHOVEN, have to be constructed using the logical operators and <code>&amp;</code>, or <code>|</code> and not <code>!</code>. The graphic below shows a complete overview of selection logical subsets of observations for two variables “red” and “blue”:</p>
+<p>Any more complicated combinations, like in circulation before 1988 but not in BILTHOVEN and not in MADRID, can be constructed using the logical operators <em>and</em> <code>&amp;</code>, <em>or</em> <code>|</code> and <em>not</em> <code>!</code>. The graphic below shows a complete overview of selection logical subsets of observations for two variables “red” and “blue”:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-plot-begin -->
@@ -2973,40 +3075,148 @@ div.tocify {
 <!-- rnb-plot-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<p>Using these logical operators, we can filter for viruses in circulation before 1988 but only in BILTHOVEN or in MADRID:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZmlsdGVyKGNvb3JkLCB5ZWFyIDwgMTk4OCwgbG9jYXRpb24gPT0gXCJCSUxUSE9WRU5cIiB8IGxvY2F0aW9uID09IFwiTUFEUklEXCIpXG5gYGAifQ== -->
+<pre class="r"><code>filter(coord, year &lt; 1988, location == &quot;BILTHOVEN&quot; | location == &quot;MADRID&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Alternatively, we can solve the above using the <code>x %in% y</code> syntax:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZmlsdGVyKGNvb3JkLCB5ZWFyIDwgMTk4OCwgbG9jYXRpb24gJWluJSBjKFwiQklMVEhPVkVOXCIsIFwiTUFEUklEXCIpKVxuYGBgIn0= -->
+<pre class="r"><code>filter(coord, year &lt; 1988, location %in% c(&quot;BILTHOVEN&quot;, &quot;MADRID&quot;))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>where we select every row where <code>x</code>, in this case location, is contained in <code>y</code>, here a vector of names.</p>
+<p><strong>Note</strong>: vectors are R data objects and are constructed by enclosing the variables<code>x</code>, <code>y</code>, <code>z</code> to be put in the vector in <code>c()</code>: <code>c(x,y,z)</code></p>
+</div>
+<div id="exercises-3" class="section level3">
+<h3><span class="header-section-number">2.4.2</span> Exercises</h3>
+<ol style="list-style-type: decimal">
+<li>Find viruses that were isolated in the NETHERLANDS.</li>
+<li>Filter for rows that are of type antigen (AG).</li>
+<li>Find viruses in circulation after 1997 and are assigned to either cluster SY97 or cluster WU95.</li>
+</ol>
 </div>
 </div>
 <div id="group-analyses-and-summarise-observations-with-group_by-and-summarise" class="section level2">
 <h2><span class="header-section-number">2.5</span> Group analyses and summarise observations with <code>group_by</code> and <code>summarise()</code></h2>
-<p><code>group_by</code> and <code>summarise()</code> often go hand in hand: using <code>group_by</code>, we can first group observation based on values in the specified variable and then apply a summary statistic on this group. This might sound a bit complicated, so let’s have a look at an example:</p>
+<p><code>group_by</code> and <code>summarise()</code> often go hand in hand: using <code>group_by</code>, we can first group observation based on values in the specified variable and then apply a summary statistic on this group. This might sound a bit complicated, so let’s have a look at an example. We are fist going to group <code>coord</code> by cluster. To pass this grouped <code>tibble</code> onto the <code>summarise</code> function, we have to save the grouped <code>tibble</code> into a new object (for now, we will see further down how we can do this more elegantly). We pass this new object to <code>summarise</code>, to find the start and end year of circulation for viruses per cluster. To find the start and end year, we can use the R functions <code>min</code> and <code>max</code>, that find the minimum and maximum entry of a <code>tibble</code> column or vector, respectively:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29vcmRfZ3JvdXBlZCA8LSBncm91cF9ieShjb29yZCwgY2x1c3RlcilcbnN1bW1hcmlzZShjb29yZF9ncm91cGVkLFxuICAgICAgICAgIHN0YXJ0PW1pbih5ZWFyKSxcbiAgICAgICAgICBlbmQ9bWF4KHllYXIpKSAgIFxuYGBgIn0= -->
+<pre class="r"><code>coord_grouped &lt;- group_by(coord, cluster)
+summarise(coord_grouped,
+          start=min(year),
+          end=max(year))   </code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<p>Functions used with <code>summarise</code> have to return a single value. Other useful functions are for instance:</p>
+<ul>
+<li><code>mean</code>: returns mean value;</li>
+<li><code>median</code>: returns median values;</li>
+<li><code>sum</code>: return the sum of input values;</li>
+<li><code>n()</code>: returns total count (this is the only one that does not take an argument);</li>
+<li><code>n_distinct</code>: returns the unique count;</li>
+</ul>
+<div id="exercises-4" class="section level3">
+<h3><span class="header-section-number">2.5.1</span> Exercises</h3>
+<ol style="list-style-type: decimal">
+<li>How do you know if a <code>tibble</code> is grouped or not? How do you ungroup a grouped <code>tibble</code> (Hint: use the help function of <code>group_by</code>).</li>
+<li>What happens if you use the same <code>summarise</code> command on the original, ungrouped <code>tibble</code>?</li>
+<li>Find the mean x and y coordinate of each cluster.</li>
+<li>Find the total and distinct number of locations per cluster.</li>
+</ol>
+</div>
 </div>
 </div>
 <div id="creating-a-workflow-with-pipes" class="section level1">
 <h1><span class="header-section-number">3</span> Creating a workflow with pipes</h1>
+<p>We have seen above how useful it is to first use <code>group_by</code> and then <code>summarise</code> on the grouped <code>tibble</code>. However, we had to first save the grouped <code>tibble</code> in a new object, that we passed on to summarise. This object solely served the purpose of an intermediate step in our workflow. To avoid having to create intermediate objects, we can use the pipe function <code>%&gt;%</code>. To do the same grouping and summarising as above, we can now simply write:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjpbImNpcmN1bGF0aW9uX3N1bW1hcnkgPC0gY29vcmQgJT4lIiwiICAgIGdyb3VwX2J5KGNsdXN0ZXIpICU+JSIsIiAgICBzdW1tYXJpc2Uoc3RhcnQ9bWluKHllYXIpLCIsIiAgICAgICAgICAgICAgZW5kPW1heCh5ZWFyKSwiLCIgICAgICAgICAgICAgIGxvY2F0aW9uPW5fZGlzdGluY3QobG9jYXRpb24pKSAlPiUiLCIgICAgbXV0YXRlKHN0YXJ0PWFzLm51bWVyaWMoc3RhcnQpKSAlPiUiLCIgICAgbXV0YXRlKGVuZD1hcy5udW1lcmljKGVuZCkpICU+JSIsIiAgICBhcnJhbmdlKHN0YXJ0KSAlPiUiLCIgICAgbXV0YXRlKGNsdXN0ZXI9ZmFjdG9yKGNsdXN0ZXIpKSAlPiUiLCIgICAgbXV0YXRlKGNsdXN0ZXI9ZmN0X2lub3JkZXIoY2x1c3RlcikpIiwiIiwicCA8LSBnZ3Bsb3QoY2lyY3VsYXRpb25fc3VtbWFyeSkiLCJwICsgZ2VvbV9zZWdtZW50KGFlcyh4PXN0YXJ0LCB4ZW5kPWVuZCwgeT1jbHVzdGVyLCB5ZW5kPWNsdXN0ZXIpKSArIiwiICAgIHhsYWIoXCJZZWFyXCIpICsiLCIgICAgeWxhYihcIkFudGlnZW5pYyBjbHVzdGVyXCIpICsiLCIgICAgdGhlbWVfYncoKSJdfQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29vcmQgJT4lIFxuICAgIGdyb3VwX2J5KGNsdXN0ZXIpICU+JVxuICAgIHN1bW1hcmlzZShzdGFydD1taW4oeWVhciksIGVuZD1tYXgoeWVhcikpICAgXG5gYGAifQ== -->
+<pre class="r"><code>coord %&gt;% 
+    group_by(cluster) %&gt;%
+    summarise(start=min(year), end=max(year))   </code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>where we pipe <code>coord</code> into the grouping function, and then pipe the output of that into the summarise function.</p>
+<p>This is really powerful and elegant, when we have to apply many processing steps to our data and want to avoid having to create lot’s of intermediate objects.</p>
+<p>For instance, in this chunk, we apply grouping by cluster, then summarise start, end and number of locations and then sort in ascending order by start year. We save the entire process in a new object by using the <code>&lt;-</code> operator.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2lyY3VsYXRpb25fc3VtbWFyeSA8LSBjb29yZCAlPiVcbiAgICBncm91cF9ieShjbHVzdGVyKSAlPiVcbiAgICBzdW1tYXJpc2Uoc3RhcnQ9bWluKHllYXIpLFxuICAgICAgICAgICAgICBlbmQ9bWF4KHllYXIpLFxuICAgICAgICAgICAgICBsb2NhdGlvbj1uX2Rpc3RpbmN0KGxvY2F0aW9uKSkgJT4lXG4gICAgYXJyYW5nZShzdGFydCkgXG5gYGAifQ== -->
 <pre class="r"><code>circulation_summary &lt;- coord %&gt;%
     group_by(cluster) %&gt;%
     summarise(start=min(year),
               end=max(year),
               location=n_distinct(location)) %&gt;%
-    mutate(start=as.numeric(start)) %&gt;%
-    mutate(end=as.numeric(end)) %&gt;%
-    arrange(start) %&gt;%
-    mutate(cluster=factor(cluster)) %&gt;%
-    mutate(cluster=fct_inorder(cluster))
+    arrange(start) </code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>We can then visualise the cluster transition over time in a segment plot. We additionally map the number of distinct locations to the size aesthetic, to visualise the its spread.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2lyY3VsYXRpb25fc3VtbWFyeSA8LSBjb29yZCAlPiVcbiAgICBncm91cF9ieShjbHVzdGVyKSAlPiVcbiAgICBzdW1tYXJpc2Uoc3RhcnQ9bWluKHllYXIpLFxuICAgICAgICAgICAgICBlbmQ9bWF4KHllYXIpLFxuICAgICAgICAgICAgICBsb2NhdGlvbj1uX2Rpc3RpbmN0KGxvY2F0aW9uKSkgJT4lXG4gICAgYXJyYW5nZShzdGFydClcblxucCA8LSBnZ3Bsb3QoY2lyY3VsYXRpb25fc3VtbWFyeSlcbnAgKyBnZW9tX3NlZ21lbnQoYWVzKHg9c3RhcnQsIHhlbmQ9ZW5kLCB5PWNsdXN0ZXIsIHllbmQ9Y2x1c3RlcixcbiAgICAgICAgICAgICAgICAgICAgIHNpemU9bG9jYXRpb24pLCBjb2xvcj1cImJsdWVcIikgK1xuICAgIGxhYnMoeD1cIlllYXJcIixcbiAgICAgICAgIHk9XCJBbnRpZ2VuaWMgY2x1c3RlclwiLFxuICAgICAgICAgc2l6ZT1cIkRpc3RpbmN0IGxvY2F0aW9uc1wiKSArXG4gICAgdGhlbWVfYncoKVxuYGBgIn0= -->
+<pre class="r"><code>circulation_summary &lt;- coord %&gt;%
+    group_by(cluster) %&gt;%
+    summarise(start=min(year),
+              end=max(year),
+              location=n_distinct(location)) %&gt;%
+    arrange(start)
 
 p &lt;- ggplot(circulation_summary)
-p + geom_segment(aes(x=start, xend=end, y=cluster, yend=cluster)) +
-    xlab(&quot;Year&quot;) +
-    ylab(&quot;Antigenic cluster&quot;) +
+p + geom_segment(aes(x=start, xend=end, y=cluster, yend=cluster,
+                     size=location), color=&quot;blue&quot;) +
+    labs(x=&quot;Year&quot;,
+         y=&quot;Antigenic cluster&quot;,
+         size=&quot;Distinct locations&quot;) +
     theme_bw()</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>This plot does not yield the result we expected. Despite us having arranged the <code>tibble</code> by start year, this is not the order it was plotted. This is something very confusing to beginners and even more experienced R users stumble over this from time to time. When using a character column (here cluster names) as aes, <code>ggplot</code> treats it as a factor column (we mentioned factors as a representation of categorical variables with fixed possible values). By converting characters to factors, the values are internally ordered alphabetically, which in this case disrupts the ordering we desired.</p>
+<p>To prevent this, we can explictly convert the cluster column into a factor and enforce the original order by the <code>fct_inorder</code> function. We can chain this processing onto our previous workflow using a pipe and the <code>mutate</code> function.</p>
+<p>The segment plot with the ordered factor as y-labels looks as we expect:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2lyY3VsYXRpb25fc3VtbWFyeSA8LSBjb29yZCAlPiVcbiAgICBncm91cF9ieShjbHVzdGVyKSAlPiVcbiAgICBzdW1tYXJpc2Uoc3RhcnQ9bWluKHllYXIpLFxuICAgICAgICAgICAgICBlbmQ9bWF4KHllYXIpLFxuICAgICAgICAgICAgICBsb2NhdGlvbj1uX2Rpc3RpbmN0KGxvY2F0aW9uKSkgJT4lXG4gICAgYXJyYW5nZShzdGFydCkgJT4lXG4gICAgbXV0YXRlKGNsdXN0ZXI9ZmN0X2lub3JkZXIoY2x1c3RlcikpXG5cbnAgPC0gZ2dwbG90KGNpcmN1bGF0aW9uX3N1bW1hcnkpXG5wICsgZ2VvbV9zZWdtZW50KGFlcyh4PXN0YXJ0LCB4ZW5kPWVuZCwgeT1jbHVzdGVyLCB5ZW5kPWNsdXN0ZXIsXG4gICAgICAgICAgICAgICAgICAgICBzaXplPWxvY2F0aW9uKSwgY29sb3I9XCJibHVlXCIpICtcbiAgICBsYWJzKHg9XCJZZWFyXCIsXG4gICAgICAgICB5PVwiQW50aWdlbmljIGNsdXN0ZXJcIixcbiAgICAgICAgIHNpemU9XCJEaXN0aW5jdCBsb2NhdGlvbnNcIikgK1xuICAgIHRoZW1lX2J3KClcbmBgYCJ9 -->
+<pre class="r"><code>circulation_summary &lt;- coord %&gt;%
+    group_by(cluster) %&gt;%
+    summarise(start=min(year),
+              end=max(year),
+              location=n_distinct(location)) %&gt;%
+    arrange(start) %&gt;%
+    mutate(cluster=fct_inorder(cluster))
+
+p &lt;- ggplot(circulation_summary)
+p + geom_segment(aes(x=start, xend=end, y=cluster, yend=cluster,
+                     size=location), color=&quot;blue&quot;) +
+    labs(x=&quot;Year&quot;,
+         y=&quot;Antigenic cluster&quot;,
+         size=&quot;Distinct locations&quot;) +
+    theme_bw()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<div id="exercises-5" class="section level2">
+<h2><span class="header-section-number">3.1</span> Exercises</h2>
+<ol style="list-style-type: decimal">
+<li>Create a piped workflow that finds the number of distinct clusters and the first virus isolation for each location.</li>
+</ol>
+</div>
+</div>
+<div id="references" class="section level1">
+<h1><span class="header-section-number">4</span> References</h1>
+<!-- rnb-text-end -->
 <div id="refs" class="references">
 <div id="ref-Wickham2017">
 <p>Wickham, Hadley, and Garrett Grolemund. 2017. <em>R for Data Science: Import, Tidy, Transform, Visualize, and Model Data</em>. 1st ed. O’Reilly Media, Inc.</p>
@@ -3014,7 +3224,7 @@ p + geom_segment(aes(x=start, xend=end, y=cluster, yend=cluster)) +
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAnRGF0YSB2aXN1YWxpc2F0aW9uIC0gcGFydCA0OiBkYXRhIHByb2Nlc3Npbmcgd2l0aCBkcGx5cicKYXV0aG9yOiAiSGFubmFoIE1leWVyIgpkYXRlOiAiMDEvMDgvMjAyMCIKb3V0cHV0OgogIHBkZl9kb2N1bWVudDoKICAgIG51bWJlcl9zZWN0aW9uczogeWVzCiAgICB0b2M6IHllcwogICAgdG9jX2RlcHRoOiAzCiAgaHRtbF9ub3RlYm9vazoKICAgIG51bWJlcl9zZWN0aW9uczogeWVzCiAgICB0b2M6IHllcwogICAgdG9jX2RlcHRoOiAzCiAgICB0b2NfZmxvYXQ6IHllcwogIGh0bWxfZG9jdW1lbnQ6CiAgICBkZl9wcmludDogcGFnZWQKICAgIHRvYzogeWVzCiAgICB0b2NfZGVwdGg6IDMKYmlibGlvZ3JhcGh5OiBiaWJsaW9ncmFwaHkuYmliCi0tLQojIEludHJvZHVjdGlvbgpJbiB0aGUgcHJldmlvdXMgdHV0b3JpYWwsIHlvdSBoYXZlIGxlYXJuZWQgaG93IHRvIHZpc3VhbGlzZSB5b3VyIGRhdGEsIGZyb20Kc2ltcGxlIHNjYXR0ZXIgcGxvdHMgd2l0aCBkZWZhdWx0IHNldHRpbmdzIHRvIGNvbXBvdW5kIGZpZ3VyZXMgd2l0aCBlbGFib3JhdGUKY29sb3Igc2NoZW1lcyBhbmQgbGFiZWxzLiBGb3IgYWxsIG9mIHRoZXNlLCB3ZSB1c2VkIHRoZSBkYXRhIGZyb20gU21pdGggKmV0IGFsKgooMjAwNCkgKG1hZGUgYXZhaWxhYmxlIGF0IHRoZSBmb2xsb3dpbmcKW2h0dHA6Ly93d3cuYW50aWdlbmljLWNhcnRvZ3JhcGh5Lm9yZy8pXShsaW5rKSkuIEkgbWVudGlvbmVkIGJyaWVmbHkgaW4gdGhlCnByZXZpb3VzIGV4ZXJjaXNlcywgdGhhdCBJIGhhZCBmb3JtYXRlZCB0aGUgZGF0YSBmb3IgdXMgdG8gd29yayB3aXRoLgpXaGF0IEkgZXhwZXJzc2VkIGhlcmUgaW4gYSBoYWxmLXNlbnRlbmNlLCB1c3VhbGx5IGNvbnRhaW5zIGEgbG90IG9mIHdvcmssIG9mdGVuCm1vcmUgdGhhbiB0aGUgYWN0dWFsIGFuYWx5c2lzOiBjbGVhbmluZyB5b3VyIGRhdGEsIGJyaW5naW5nIGl0IGludG8gdGhlIApyaWdodCBmb3JtYXQsIGNoZWNraW5nIGl0IGZvciBzYW5pdHkuIEluIHRoZSBmb2xsb3dpbmcgc2VjdGlvbnMsIHdlIHdpbGwKbGVhcm4gaG93IHRvIHVzZSAnZHBseXInIHRvIHJlZm9ybWF0IGRhdGEgaW50byBhICd0aWR5JyBmb3JtYXQgdGhhdCB3ZSBjYW4gdXNlCmZvciB2aXN1YWxpc2F0aW9uIGFuZCBhbmFseXNpcy4KCkZvciBhIG1vcmUgZGV0YWlsZWQgZGVzY3JpcHRpb24gYW5kIGFkZGl0aW9uYWwgZXhhbXBsZXMsIHJlZmVyIHRvIGNoYXB0ZXIgNQppbiBIYWRsZXkgV2lja2hhbSBib29rICdSIGZvciBEYXRhIFNjaWVuY2UnIEBXaWNraGFtMjAxNy4gSSB3b3VsZCBnZW5lcmFsbHkKaGlnaGx5IHJlY29tbWVuZCB0aGlzIGJvb2ssIGFzIGl0IGludHJvZHVjZXMgY29uY2VwdHMgd2UgaGF2ZSBkaXNjdXNzZWQgaW4gdGhpcwpjb3Vyc2UgYW5kIGJleW9uZCAtIGl0cyBvbmxpbmUgdmVyc2lvbiBpcyBhdmFpbGFibGUgZm9yIGZyZWUKW2hlcmVdKGh0dHBzOi8vcjRkcy5oYWQuY28ubnovKSEKCiMgZHBseXI6IGEgZ3JhbW1hciBvZiBkYXRhIG1hbmlwdWxhdGlvbgpUaGUgZHBseXIgcGFja2FnZSBpcyBhIGNvcmUgbWVtYmVyIG9mIHRoZSB0aWR5dmVyc2UuIGRwbHlyJ3MgY29yZSBmdW5jdGlvbmFsaXR5CnJlbGllcyBvbiBzaXggZnVuY3Rpb25zIHRoYXQgbGV0IHVzIHNvbHZlIHRoZSBtYWpvcml0eSBvZiBkYXRhIHJlZm9ybWF0aW5nLgpUaGVzZSBmdW5jdGlvbnMsIG9mdGVuIGRlc2NyaWJlZCBhcyB0aGUgYHZlcmJzIGZvciB0aGUgbGFuZ3VhZ2Ugb2YgZGF0YQptYW5pcHVsYXRpb24nLCBhcmU6CgoqIGBzZWxlY3QoKWA6IHRvIHNlbGVjdCBhIHN1YnNldCBvZiB2YXJpYWJsZXM7CiogYGFycmFuZ2UoKWA6IHRvIGNoYW5nZSB0aGUgb3JkZXIgb2Ygb2JzZXJ2YXRpb25zOwoqIGBtdXRhdGUoKWA6IHRvIGFkZCBuZXcgdmFyaWFibGVzIHRoYXQgYXJlIGZ1bmN0aW9ucyBvZiBleGlzdGluZyB2YXJpYWJsZXM7CiogYGZpbHRlcigpYDogIHRvIHN1YnNldCBvYnNlcnZhdGlvbnMgYmFzZWQgb24gdGhlaXIgdmFsdWVzOwoqIGBzdW1tYXJpc2UoKWA6IHRvIHN1bW1hcmlzZSBvYnNlcnZhdGlvbnMgdG8gYSBzaW5nbGUgcm93OwoqIGBncm91cF9ieSgpYDogdG8gY2hhbmdlIHRoZSB1bml0IG9mIGFuYWx5c2lzIGZyb20gdGhlIGNvbXBsZXRlIGRhdGFzZXQgdG8KaW5kaXZpZHVhbCBncm91cHMuCgpBbGwgdmVyYnMgd29yayBpbiBhIHNpbWlsYXIgZmFzaGlvbjoKICAgICogdGhlaXIgZmlyc3QgYXJndW1lbnQgaXMgYSBgdGliYmxlYCBvciBgZGF0YS5mcmFtZWA7CiAgICAqIHRoZSBmb2xsb3dpbmcgYXJndW1lbnRzIGRlc2NyaWJlIHRoZSBhY3Rpb24gdG8gYXBwbHkgdG8gdGhhdCAKICAgICAgYHRpYmJsZWAvYGRhdGEuZnJhbWVgIGJ5IHNwZWNpZnlpbmcgdGhlIHZhcmlhYmxlIG5hbWVzCiAgICAqIHRoZSByZXN1bHQgaXMgYSBuZXcgYHRpYmJsZWAvYGRhdGEuZnJhbWVgLCBkZXBlbmRlbnQgb24gdGhlIGluaXRpYWwgaW5wdXQKCipOb3RlKjogSWYgeW91IHdhbnQgdG8gc2F2ZSB0aGUgcmVzdWx0cyBvZiBhIGBkcGx5cmAgZnVuY3Rpb24sIHlvdSBoYXZlIHRvIHVzZQp0aGUgYXNzaWdubWVudCBvcGVyYXRvciBgPC1gLCBhcyBgZHBseXJgIGZ1bmN0aW9uIG5ldmVyIG1vZGlmeSB0aGVpciBpbnB1dCBkYXRhLgoKIyMgQ2hhbmdlIHRoZSBvcmRlciBvZiBvYnNlcnZhdGlvbnMgd2l0aCBgYXJyYW5nZSgpYApVc2luZyBgYXJyYW5nZSgpYCwgd2UgY2FuIGNoYW5nZSB0aGUgb3JkZXIgb2Ygcm93cy4gQXMgaW5wdXQsIGBhcnJhbmdlYCB0YWtlcwphIGB0aWJibGVgIGFuZCBhIHNldCBvZiB2YXJpYWJsZSBuYW1lcyAtIGF0IGxlYXN0IG9uZSBpcyByZXF1aXJlZC4gSXQgd2lsbCAKcmUtYXJyYW5nZSB0aGUgb2JzZXJ2YXRpb25zIG9mIHRoZSBgdGliYmxlYCBiYXNlZCBvbiB2YXJpYWJsZSBzZWxlY3RlZCBmb3IKcmUtb3JkZXJpbmcuIApJZiB5b3UgcHJvdmlkZWQgbW9yZSB0aGFuIG9uZSB2YXJpYWJsZSB0byBvcmRlciB0aGUgdGliYmxlIGJ5LCBlYWNoIGFkZGl0aW9uYWwKdmFyaWFibGUgd2lsbCBiZSB1c2VkIHRvIGJyZWFrIHRpZXMgaW4gdGhlIHZhbHVlcyBvZiBwcmVjZWRpbmcgdmFyaWFibGVzLgpgYGB7cn0KCmBgYAoKQXMgYSBkZWZhdWx0LCBgYXJyYW5nZWAgb3JkZXJzIHRoZSB2YXJpYWJsZXMgaW4gYXNjZW5kaW5nIG9yZGVyLiBUbyByZS1vcmRlciBpbgpkZXNjZW5kaW5nIG9yZGVyIHVzZSBgZGVzYygpYDoKYGBge3J9CgpgYGAKCiMjIFNlbGVjdCBhIHN1YnNldCBvZiB2YXJpYWJsZXMgd2l0aCBgc2VsZWN0KClgCmBzZWxlY3QoKWAgbGV0J3MgdXMgcGljayBhIHN1YnNldCBvZiB2YXJpYWJsZXMuIEluIHRoZSBtb3N0IHNpbXBsZSBjYXNlLAp3ZSBzcGVjaWZ5IHRoZSBgdGliYmxlYCBmcm9tIHdoaWNoIHdlIHdhbnQgdG8gYHNlbGVjdCgpYCB2YXJpYWJsZXMsIGZvbGxvd2VkCmJ5IHRoZSBuYW1lcyBvZiB0aGUgdmFyaWFibGVzIHRoYXQgd2Ugd2FudCB0byBwaWNrOgpgYGB7cn0KCmBgYAoKVG8gZXhjbHVkZSBhIHZhcmlhYmxlLCB1c2UgYHNlbGVjdCgpYCB3aXRoIHRoZSB2YXJpYWJsZSBuYW1lIHByZWNlZGVkIGJ5IGEgCm1pbnVzIGAtYC4KCkluIGFkZGl0aW9uIHRvIHRoYXQsIHRoZXJlIGEgIG51bWJlciBvZiBmdW5jdGlvbnMgdGhhdCBjYW4gYmUgdXNlZCBpbgpjb25qdW5jdGlvbiB3aXRoIGBzZWxlY3QoKWAgdGhhdCBsZXQgdXMgc2VsZWN0IG11bHRpcGxlIHZhcmlhYmxlcyB3aXRoIGNvbW1vbgplbGVtZW50cyBpbiB0aGVpciBuYW1lLiBUaGVzZSBpbmNsdWRlOgogICAgKiBzdGFydHNfd2l0aCgieWVhciIpOiBtYXRjaGVzIG5hbWVzIHRoYXQgYmVnaW4gd2l0aCDigJx5ZWFy4oCdLgogICAgKiBlbmRzX3dpdGgoImNvb3JkaW5hdGUiKTogbWF0Y2hlcyBuYW1lcyB0aGF0IGVuZCB3aXRoIOKAnGNvb3JkaW5hdGXigJ0uCiAgICAqIGNvbnRhaW5zKCJjb29yZCIpOiBtYXRjaGVzIG5hbWVzIHRoYXQgY29udGFpbiDigJxjb29yZOKAnS4KICAgICogbnVtX3JhbmdlKCJYIiwgMTozKTogbWF0Y2hlcyBYMSwgWDIgYW5kIFgzLgpgYGB7cn0KCmBgYAoKIyMgQWRkIG5ldyB2YXJpYWJsZXMgd2l0aCBgbXV0YXRlKClgClRvIGFkZCBuZXcgdmFyaWFibGVzIHRvIGEgYHRpYmJsZWAsIHdlIHVzZSBgbXV0YXRlYC4gQWdhaW4sIGBtdXRhdGVgIGZpcnN0CmV4cGVjdHMgdGhlIG5hbWUgb2YgdGhlIGB0aWJibGVgIHRvIHdoaWNoIHdlIHdhbnQgdG8gYWRkIGEgdmFyaWFibGUsIGZvbGxvd2VkCmJ5IHRoZSBuYW1lIG9mIHRoZSBuZXcgdmFyaWFibGUsIGFuIGVxdWFsIHNpZ24gYD1gIGFuZCB0aGUgZGF0YSB0byBhZGQuIFRoZSAKZGF0YSBoYXMgdG8gaGF2ZSB0aGUgc2FtZSBudW1iZXIgb2Ygb2JzZXJ2YXRpb25zIGFzIG91ciBpbnB1dCBgdGliYmxlYCBhbmQKY2FuIGJlIGNyZWF0ZWQgYnkgdXNpbmcgYSB0cmFuc2Zvcm1hdGlvbiBvZiBhbiBleGlzdGluZyB2YXJpYWJsZToKYGBge3J9CgpgYGAKCipOb3RlKjogYG11dGF0ZSgpYCBhZGRzIHRoZSBjb2x1bW4gYXQgdGhlIGVuZCBvZiB0aGUgYHRpYmJsZWA7IGlmIHlvdSB3YW50IGl0CmF0IGEgZGlmZmVyZW50IHBvc2l0aW9uIHVzZSBgc2VsZWN0YCB0byByZW9yZGVyIHRoZSB2YXJpYWJsZXMgYWZ0ZXJ3YXJkcy4KCiMjIFNlbGVjdCBvZiBzdWJzZXQgb2Ygb2JzZXJ2YXRpb25zIHdpdGggYGZpbHRlcigpYApVc2luZyBgc2VsZWN0YCB3ZSBjb3VsZCBjcmVhdGUgYSBzdWJzZXQgb2YgdGhlIGlucHV0IGRhdGEgYnkgc2VsZWN0aW5nCnZhcmlhYmxlcy4gYGZpbHRlcigpYCBhbGxvd3MgdXMgdG8gc3Vic2V0IG91ciBpbnB1dCBkYXRhIGJ5IG9ic2VydmF0aW9ucy4KQXMgYSBmaXJzdCBhcmd1bWVudCBpdCB0YWtlcyB0aGUgbmFtZSBvZiB0aGUgYHRpYmJsZWA7IHRoaXMKaXMgZm9sbG93ZWQgYnkgZXhwcmVzc2lvbnMgdGhhdCBmaWx0ZXIgb2JzZXJ2YXRpb25zIGJhc2VkIG9uIHRoZWlyIHZhbHVlIGluIHRoZQpzcGVjaWZpZWQgdmFyaWFibGVzLiBGaWx0ZXJpbmcgdXNlcyB0aGUgc3RhbmRhcmQgc2V0IG9mIGNvbXBhcmlzb24gb3BlcmF0b3JzIAphdmFpbGFibGUgaW4gUi4KCiMjIyBDb21wYXJpc29ucwpDb21wYXJpc29uIG9wZXJhdG9ycyBpbiBSOgogICAgKiBgPT1gOiBlcXVhbCB0bwogICAgKiBgIT1gOiBub3QgZXF1YWwgdG8KICAgICogYD5gOiBncmVhdGVyIHRoYW4KICAgICogYD49YDogZ3JlYXRlciBvciBlcXVhbCB0aGFuCiAgICAqIGA8YDogbGVzcyB0aGFuCiAgICAqIGA8PWA6IGxlc3Mgb3IgZXF1YWwgdGhhbgoKKk5vdGUqOiBXaGVuIHRlc3RpbmcgZm9yIGVxdWFsaXR5LCBtYWtlIHN1cmUgdG8gdXNlIGA9PWAgYW5kIG5vdCBhIHNpbXBsZSBgPWAhCgpGb3IgaW5zdGFuY2UsIHRoZSBmb2xsb3dpbmcgY29kZSBsZXQncyB1cyBzZWxlY3QgYWxsIG9ic2VydmF0aW9ucyBvZiB2aXJ1c2VzCmluIGNpcmN1bGF0aW9uIGFmdGVyIDE5ODg6CmBgYHtyfQoKYGBgCgpJbiBhZGRpdGlvbiB0byB0aGVzZSBjb21wYXJpc29uIG9wZXJhdG9ycywgd2UgY2FuIGFsc28gdXNlIGJvb2xlYW4gb3BlcmF0b3JzIHRwCmZpbHRlciB0aGUgaW5wdXQgZGF0YS4gVGhlIHNpbXBsZXN0IGJvb2xlYW4gb3BlcmF0b3IgaXMgaW50cmluc2ljIHRvIHRoZSAKYGZpbHRlcmAgZnVuY3Rpb246IG11bHRpcGxlIGFyZ3VtZW50cyB0byBgZmlsdGVyKClgIGFyZSBjb21iaW5lZCB3aXRoIGFuZCwgaS5lLgpldmVyeSBleHByZXNzaW9uIGhhcyB0byBiZSB0cnVlIGZvciBhbiBvYnNlcnZhdGlvbiB0byBiZSBrZXB0IGluIHRoZSBvdXRwdXQuCkZvciBpbnN0YW5jZTogCmBgYHtyfQoKYGBgCgpBbnkgbW9yZSBjb21wbGljYXRlZCBjb21iaW5hdGlvbnMsIGxpa2UgaW4gY2lyY3VsYXRpb24gYmVmb3JlIDE5ODcgYnV0IG5vdCAKQklMVEhPVkVOLCBoYXZlIHRvIGJlIGNvbnN0cnVjdGVkIHVzaW5nIHRoZSBsb2dpY2FsIG9wZXJhdG9ycyBhbmQgYCZgLCBvciBgfGAKYW5kIG5vdCBgIWAuIFRoZSBncmFwaGljIGJlbG93IHNob3dzIGEgY29tcGxldGUgb3ZlcnZpZXcgb2Ygc2VsZWN0aW9uCmxvZ2ljYWwgc3Vic2V0cyBvZiBvYnNlcnZhdGlvbnMgZm9yIHR3byB2YXJpYWJsZXMgInJlZCIgYW5kICJibHVlIjoKCmBgYHtyIGVjaG8gPSBGQUxTRX0Ka25pdHI6OmluY2x1ZGVfZ3JhcGhpY3MoImltYWdlcy9vcGVyYXRvcnMuanBnIiwgZHBpPTUwMCkKYGBgCgojIyBHcm91cCBhbmFseXNlcyBhbmQgc3VtbWFyaXNlIG9ic2VydmF0aW9ucyB3aXRoIGBncm91cF9ieWAgYW5kIGBzdW1tYXJpc2UoKWAKIGBncm91cF9ieWAgYW5kIGBzdW1tYXJpc2UoKWAgb2Z0ZW4gZ28gaGFuZCBpbiBoYW5kOiB1c2luZyBgZ3JvdXBfYnlgLCB3ZSBjYW4KIGZpcnN0IGdyb3VwIG9ic2VydmF0aW9uIGJhc2VkIG9uIHZhbHVlcyBpbiB0aGUgc3BlY2lmaWVkIHZhcmlhYmxlIGFuZCB0aGVuCiBhcHBseSBhIHN1bW1hcnkgc3RhdGlzdGljIG9uIHRoaXMgZ3JvdXAuIFRoaXMgbWlnaHQgc291bmQgYSBiaXQgY29tcGxpY2F0ZWQsCiBzbyBsZXQncyBoYXZlIGEgbG9vayBhdCBhbiBleGFtcGxlOgoKYGBge3J9CgpgYGAKCgoKIyBDcmVhdGluZyBhIHdvcmtmbG93IHdpdGggcGlwZXMKCgpgYGB7ciBldmFsPUZBTFNFIH0KY2lyY3VsYXRpb25fc3VtbWFyeSA8LSBjb29yZCAlPiUKICAgIGdyb3VwX2J5KGNsdXN0ZXIpICU+JQogICAgc3VtbWFyaXNlKHN0YXJ0PW1pbih5ZWFyKSwKICAgICAgICAgICAgICBlbmQ9bWF4KHllYXIpLAogICAgICAgICAgICAgIGxvY2F0aW9uPW5fZGlzdGluY3QobG9jYXRpb24pKSAlPiUKICAgIG11dGF0ZShzdGFydD1hcy5udW1lcmljKHN0YXJ0KSkgJT4lCiAgICBtdXRhdGUoZW5kPWFzLm51bWVyaWMoZW5kKSkgJT4lCiAgICBhcnJhbmdlKHN0YXJ0KSAlPiUKICAgIG11dGF0ZShjbHVzdGVyPWZhY3RvcihjbHVzdGVyKSkgJT4lCiAgICBtdXRhdGUoY2x1c3Rlcj1mY3RfaW5vcmRlcihjbHVzdGVyKSkKCnAgPC0gZ2dwbG90KGNpcmN1bGF0aW9uX3N1bW1hcnkpCnAgKyBnZW9tX3NlZ21lbnQoYWVzKHg9c3RhcnQsIHhlbmQ9ZW5kLCB5PWNsdXN0ZXIsIHllbmQ9Y2x1c3RlcikpICsKICAgIHhsYWIoIlllYXIiKSArCiAgICB5bGFiKCJBbnRpZ2VuaWMgY2x1c3RlciIpICsKICAgIHRoZW1lX2J3KCkKYGBg</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAnRGF0YSB2aXN1YWxpc2F0aW9uIC0gcGFydCA0OiBkYXRhIHByb2Nlc3Npbmcgd2l0aCBkcGx5cicKYXV0aG9yOiAiSGFubmFoIE1leWVyIgpkYXRlOiAiMDEvMDgvMjAyMCIKb3V0cHV0OgogIHBkZl9kb2N1bWVudDoKICAgIG51bWJlcl9zZWN0aW9uczogeWVzCiAgICB0b2M6IHllcwogICAgdG9jX2RlcHRoOiAzCiAgaHRtbF9kb2N1bWVudDoKICAgIGRmX3ByaW50OiBwYWdlZAogICAgdG9jOiB5ZXMKICAgIHRvY19kZXB0aDogMwogIGh0bWxfbm90ZWJvb2s6CiAgICBudW1iZXJfc2VjdGlvbnM6IHllcwogICAgdG9jOiB5ZXMKICAgIHRvY19kZXB0aDogMwogICAgdG9jX2Zsb2F0OiB5ZXMKYmlibGlvZ3JhcGh5OiBiaWJsaW9ncmFwaHkuYmliCi0tLQojIEludHJvZHVjdGlvbgpJbiB0aGUgcHJldmlvdXMgdHV0b3JpYWxzLCB5b3UgaGF2ZSBsZWFybmVkIGhvdyB0byB2aXN1YWxpc2UgeW91ciBkYXRhLCBmcm9tCnNpbXBsZSBzY2F0dGVyIHBsb3RzIHdpdGggZGVmYXVsdCBzZXR0aW5ncyB0byBjb21wb3VuZCBmaWd1cmVzIHdpdGggZWxhYm9yYXRlCmNvbG9yIHNjaGVtZXMgYW5kIGxhYmVscy4gRm9yIGFsbCBvZiB0aGVzZSwgd2UgdXNlZCB0aGUgZGF0YSBmcm9tIFNtaXRoICpldCBhbCoKKDIwMDQpIChtYWRlIGF2YWlsYWJsZSBhdCB0aGUgZm9sbG93aW5nCltodHRwOi8vd3d3LmFudGlnZW5pYy1jYXJ0b2dyYXBoeS5vcmcvXShsaW5rKSkuIEkgbWVudGlvbmVkIGJyaWVmbHkgaW4gdGhlCnByZXZpb3VzIGV4ZXJjaXNlcywgdGhhdCBJIGhhZCBmb3JtYXRlZCB0aGUgZGF0YSBmb3IgdXMgdG8gd29yayB3aXRoLgpXaGF0IEkgZXhwcmVzc2VkIHRoZXJlIGluIGEgaGFsZi1zZW50ZW5jZSwgdXN1YWxseSBjb250YWlucyBhIGxvdCBvZiB3b3JrLCBvZnRlbgptb3JlIHRoYW4gdGhlIGFjdHVhbCBhbmFseXNpczogY2xlYW5pbmcgeW91ciBkYXRhLCBicmluZ2luZyBpdCBpbnRvIHRoZSAKcmlnaHQgZm9ybWF0LCBjaGVja2luZyBpdCBmb3Igc2FuaXR5LiBJbiB0aGUgZm9sbG93aW5nIHNlY3Rpb25zLCB3ZSB3aWxsCmxlYXJuIGhvdyB0byB1c2UgJ2RwbHlyJyB0byByZWZvcm1hdCBkYXRhIGludG8gYSAndGlkeScgZm9ybWF0IHRoYXQgd2UgY2FuIHVzZQpmb3IgdmlzdWFsaXNhdGlvbiBhbmQgYW5hbHlzaXMuCgpGb3IgYSBtb3JlIGRldGFpbGVkIGRlc2NyaXB0aW9uIGFuZCBhZGRpdGlvbmFsIGV4YW1wbGVzLCByZWZlciB0byBjaGFwdGVyIDUKaW4gSGFkbGV5IFdpY2toYW0gYm9vayAnUiBmb3IgRGF0YSBTY2llbmNlJyBbQFdpY2toYW0yMDE3XS4gSSB3b3VsZCBnZW5lcmFsbHkKaGlnaGx5IHJlY29tbWVuZCB0aGlzIGJvb2ssIGFzIGl0IGludHJvZHVjZXMgY29uY2VwdHMgd2UgaGF2ZSBkaXNjdXNzZWQgaW4gdGhpcwpjb3Vyc2UgYW5kIGJleW9uZCAtIGl0cyBvbmxpbmUgdmVyc2lvbiBpcyBhdmFpbGFibGUgZm9yIGZyZWUKW2hlcmVdKGh0dHBzOi8vcjRkcy5oYWQuY28ubnovKSEKCkZpcnN0LCB3ZSBhcmUgZ29pbmcgdG8gc2V0IHVwIG91ciBhbmFseXNpcyBzY3JpcHQsCmBgYHtyIHNldHVwfQprbml0cjo6b3B0c19jaHVuayRzZXQoZWNobyA9IFRSVUUsCiAgICAgICAgICAgICAgICAgICAgICBjb21tZW50ID0gIiM+IiwKICAgICAgICAgICAgICAgICAgICAgIGNvbGxhcHNlID0gVFJVRSwKICAgICAgICAgICAgICAgICAgICAgIGZpZy53aWR0aCA9IDYsIGZpZy5hc3AgPSAwLjYxOCwgZmlnLmFsaWduID0gImNlbnRlciIsCiAgICAgICAgICAgICAgICAgICAgICBvdXQud2lkdGggPSAiNzAlIikKYGBgCgpsb2FkIHRoZSByZXF1aXJlZCBsaWJyYXJpZXMKYGBge3IgbGlicmFyaWVzLCBtZXNzYWdlPUZBTFNFfQpsaWJyYXJ5KCJ0aWR5dmVyc2UiKQpsaWJyYXJ5KCJjb3dwbG90IikKbGlicmFyeSgic2YiKQpsaWJyYXJ5KCJybmF0dXJhbGVhcnRoIikKbGlicmFyeSgiUkNvbG9yQnJld2VyIikKYGBgCgphbmQgcmVhZCBvdXIgZGF0YXNldCBpbnRvIFIgYWdhaW46CmBgYHtyIHBhdGhzfQpjb29yZCA8LSByZWFkX2NzdigiZGF0YS8yMDA0X1NjaWVuY2VfU21pdGhfZGF0YS5jc3YiKQpgYGAKCiMgZHBseXI6IGEgZ3JhbW1hciBvZiBkYXRhIG1hbmlwdWxhdGlvbgpUaGUgZHBseXIgcGFja2FnZSBpcyBhIGNvcmUgbWVtYmVyIG9mIHRoZSB0aWR5dmVyc2UuIGRwbHlyJ3MgY29yZSBmdW5jdGlvbmFsaXR5CnJlbGllcyBvbiBzaXggZnVuY3Rpb25zIHRoYXQgbGV0IHVzIHNvbHZlIHRoZSBtYWpvcml0eSBvZiBkYXRhIHJlZm9ybWF0aW5nLgpUaGVzZSBmdW5jdGlvbnMsIG9mdGVuIGRlc2NyaWJlZCBhcyB0aGUgYHZlcmJzIGZvciB0aGUgbGFuZ3VhZ2Ugb2YgZGF0YQptYW5pcHVsYXRpb24nLCBhcmU6CgoqIGBhcnJhbmdlKClgOiB0byBjaGFuZ2UgdGhlIG9yZGVyIG9mIG9ic2VydmF0aW9uczsKKiBgc2VsZWN0KClgOiB0byBzZWxlY3QgYSBzdWJzZXQgb2YgdmFyaWFibGVzOwoqIGBtdXRhdGUoKWA6IHRvIGFkZCBuZXcgdmFyaWFibGVzIHRoYXQgYXJlIGZ1bmN0aW9ucyBvZiBleGlzdGluZyB2YXJpYWJsZXM7CiogYGZpbHRlcigpYDogIHRvIHN1YnNldCBvYnNlcnZhdGlvbnMgYmFzZWQgb24gdGhlaXIgdmFsdWVzOwoqIGBzdW1tYXJpc2UoKWA6IHRvIHN1bW1hcmlzZSBvYnNlcnZhdGlvbnMgdG8gYSBzaW5nbGUgcm93OwoqIGBncm91cF9ieSgpYDogdG8gY2hhbmdlIHRoZSB1bml0IG9mIGFuYWx5c2lzIGZyb20gdGhlIGNvbXBsZXRlIGRhdGFzZXQgdG8KaW5kaXZpZHVhbCBncm91cHMuCgpBbGwgdmVyYnMgd29yayBpbiBhIHNpbWlsYXIgZmFzaGlvbjoKCiogdGhlaXIgZmlyc3QgYXJndW1lbnQgaXMgYSBgdGliYmxlYCBvciBgZGF0YS5mcmFtZWA7CiogdGhlIGZvbGxvd2luZyBhcmd1bWVudHMgZGVzY3JpYmUgdGhlIGFjdGlvbiB0byBhcHBseSB0byB0aGF0IAogIGB0aWJibGVgL2BkYXRhLmZyYW1lYCBieSBzcGVjaWZ5aW5nIHRoZSB2YXJpYWJsZSBuYW1lcwoqIHRoZSByZXN1bHQgaXMgYSBuZXcgYHRpYmJsZWAvYGRhdGEuZnJhbWVgLCBkZXBlbmRlbnQgb24gdGhlIGluaXRpYWwgaW5wdXQKCioqTm90ZSoqOiBJZiB5b3Ugd2FudCB0byBzYXZlIHRoZSByZXN1bHRzIG9mIGEgYGRwbHlyYCBmdW5jdGlvbiwgeW91IGhhdmUgdG8gdXNlCnRoZSBhc3NpZ25tZW50IG9wZXJhdG9yIGA8LWAsIGFzIGBkcGx5cmAgZnVuY3Rpb25zIG5ldmVyIG1vZGlmeSB0aGVpciBpbnB1dApkYXRhLgoKIyMgQ2hhbmdlIHRoZSBvcmRlciBvZiBvYnNlcnZhdGlvbnMgd2l0aCBgYXJyYW5nZSgpYApVc2luZyBgYXJyYW5nZSgpYCwgd2UgY2FuIGNoYW5nZSB0aGUgb3JkZXIgb2Ygcm93cy4gQXMgaW5wdXQsIGBhcnJhbmdlYCB0YWtlcwphIGB0aWJibGVgIGFuZCBhIHNldCBvZiB2YXJpYWJsZSBuYW1lcyAtIGF0IGxlYXN0IG9uZSBpcyByZXF1aXJlZC4gSXQgd2lsbCAKcmUtYXJyYW5nZSB0aGUgb2JzZXJ2YXRpb25zIG9mIHRoZSBgdGliYmxlYCBiYXNlZCBvbiB2YXJpYWJsZSBzZWxlY3RlZCBmb3IKcmUtb3JkZXJpbmcuIApJZiB5b3UgcHJvdmlkZWQgbW9yZSB0aGFuIG9uZSB2YXJpYWJsZSB0byBvcmRlciB0aGUgdGliYmxlIGJ5LCBlYWNoIGFkZGl0aW9uYWwKdmFyaWFibGUgd2lsbCBiZSB1c2VkIHRvIGJyZWFrIHRpZXMgaW4gdGhlIHZhbHVlcyBvZiBwcmVjZWRpbmcgdmFyaWFibGVzLgoKSGVyZSwgd2UgYXJlIGdvaW5nIHRvIG9yZGVyIGBjb29yZGAgYnkgbG9jYXRpb24gYW5kIHllYXI6CmBgYHtyfQphcnJhbmdlKGNvb3JkLCBsb2NhdGlvbiwgeWVhcikKYGBgCgpBcyBhIGRlZmF1bHQsIGBhcnJhbmdlYCBvcmRlcnMgdGhlIHZhcmlhYmxlcyBpbiBhc2NlbmRpbmcgb3JkZXIuIFRvIHJlLW9yZGVyIGluCmRlc2NlbmRpbmcgb3JkZXIgdXNlIGBkZXNjKClgOgpgYGB7cn0KYXJyYW5nZShjb29yZCwgZGVzYyhsb2NhdGlvbiksIHllYXIpCmBgYAojIyMgRXhlcmNpc2VzCjEuIEhvdyBkb2VzIHRoZSBvdXB1dCBjaGFuZ2UgaWYgeW91IHNvcnRlZCBieSB5ZWFyIGZpcnN0LCB0aGVuIGxvY2F0aW9uPwoyLiBTb3J0IGBjb29yZGAgdG8gZmluZCB3aGVuIHRoZSBsYXN0IHZpcnVzIHdhcyBpc29sYXRlZC4KMy4gRmluZCB0aGUgbGFyZ2VzdCBhbmQgc21hbGxlc3QgeC5jb29yZGluYXRlIGluIHRoZSBkYXRhc2V0LgoKIyMgU2VsZWN0IGEgc3Vic2V0IG9mIHZhcmlhYmxlcyB3aXRoIGBzZWxlY3QoKWAKYHNlbGVjdCgpYCBsZXQncyB1cyBwaWNrIGEgc3Vic2V0IG9mIHZhcmlhYmxlcy4gSW4gdGhlIG1vc3Qgc2ltcGxlIGNhc2UsCndlIHNwZWNpZnkgdGhlIGB0aWJibGVgIGZyb20gd2hpY2ggd2Ugd2FudCB0byBgc2VsZWN0KClgIHZhcmlhYmxlcywgZm9sbG93ZWQKYnkgdGhlIG5hbWVzIG9mIHRoZSB2YXJpYWJsZXMgdGhhdCB3ZSB3YW50IHRvIHBpY2suIEZvciBpbnN0YW5jZSwgd2UgY291bGQKc2VsZWN0IG9ubHkgbmFtZXMgYW5kIGxvY2F0aW9uOgpgYGB7cn0Kc2VsZWN0KGNvb3JkLCBuYW1lLCBsb2NhdGlvbikKYGBgCgpUbyBleGNsdWRlIGEgdmFyaWFibGUsIHVzZSBgc2VsZWN0KClgIHdpdGggdGhlIHZhcmlhYmxlIG5hbWUgcHJlY2VkZWQgYnkgYSAKbWludXMgYC1gOgoKYGBge3J9CnNlbGVjdChjb29yZCwgLXR5cGUpCmBgYAoKSW4gYWRkaXRpb24gdG8gdGhhdCwgdGhlcmUgYSAgbnVtYmVyIG9mIGZ1bmN0aW9ucyB0aGF0IGNhbiBiZSB1c2VkIGluCmNvbmp1bmN0aW9uIHdpdGggYHNlbGVjdCgpYCB0aGF0IGxldCB1cyBzZWxlY3QgbXVsdGlwbGUgdmFyaWFibGVzIHdpdGggY29tbW9uCmVsZW1lbnRzIGluIHRoZWlyIG5hbWUuIFRoZXNlIGluY2x1ZGU6CiAgICAKKiBzdGFydHNfd2l0aCgieWVhciIpOiBtYXRjaGVzIG5hbWVzIHRoYXQgYmVnaW4gd2l0aCDigJx5ZWFy4oCdLgoqIGVuZHNfd2l0aCgiY29vcmRpbmF0ZSIpOiBtYXRjaGVzIG5hbWVzIHRoYXQgZW5kIHdpdGgg4oCcY29vcmRpbmF0ZeKAnS4KKiBjb250YWlucygiY29vcmQiKTogbWF0Y2hlcyBuYW1lcyB0aGF0IGNvbnRhaW4g4oCcY29vcmTigJ0uCiogbnVtX3JhbmdlKCJYIiwgMTozKTogbWF0Y2hlcyBYMSwgWDIgYW5kIFgzLgoKQmVsb3csIHdlIHNlbGVjdCBhbGwgY29sdW1ucyB0aGF0IGVuZCB3aXRoIHRoZSB3b3JkICdjb29yZGluYXRlJzoKYGBge3J9CnNlbGVjdChjb29yZCwgZW5kc193aXRoKCJjb29yZGluYXRlIikpCmBgYAoKIyMjIEV4ZXJjaXNlcwoxLiBXaGF0IGFyZSB0d28gb3RoZXIgd2F5cyBvZiBvbmx5IHNlbGVjdGluZyB0aGUgYHguY29vcmRpbmF0ZWAgYW5kCmB5LmNvb3JkaW5hdGVgIGNvbHVtbnM/CjIuIENhbiB5b3UgdXNlIGBzZWxlY3RgIHRvIG1vdmUgdGhlIGBsb2NhdGlvbmAgdmFyaWFibGUgZnJvbSBzZWNvbmQgY29sdW1uIHRvCmxhc3Q/CgojIyBBZGQgbmV3IHZhcmlhYmxlcyB3aXRoIGBtdXRhdGUoKWAKVG8gYWRkIG5ldyB2YXJpYWJsZXMgdG8gYSBgdGliYmxlYCwgd2UgdXNlIGBtdXRhdGVgLiBBZ2FpbiwgYG11dGF0ZWAgZmlyc3QKZXhwZWN0cyB0aGUgbmFtZSBvZiB0aGUgYHRpYmJsZWAgdG8gd2hpY2ggd2Ugd2FudCB0byBhZGQgYSB2YXJpYWJsZSwgZm9sbG93ZWQKYnkgdGhlIG5hbWUgb2YgdGhlIG5ldyB2YXJpYWJsZSwgYW4gZXF1YWwgc2lnbiBgPWAgYW5kIHRoZSBkYXRhIHRvIGFkZC4gVGhlIApkYXRhIGhhcyB0byBoYXZlIHRoZSBzYW1lIG51bWJlciBvZiBvYnNlcnZhdGlvbnMgYXMgb3VyIGlucHV0IGB0aWJibGVgIGFuZApjYW4gYmUgY3JlYXRlZCBieSB1c2luZyBhIHRyYW5zZm9ybWF0aW9uIG9mIGFuIGV4aXN0aW5nIHZhcmlhYmxlLgoKSGVyZSB3ZSBjcmVhdGUgYSBuZXcgdmFyaWFibGUsIHRoYXQgY29udGFpbnMgdGhlIEV1Y2xpZGVhbiBkaXN0YW5jZSBvZiBlYWNoCmFudGlnZW4gZnJvbSB0aGUgb3JpZ2luIGF0ICgwLDApOgpgYGB7cn0KbXV0YXRlKGNvb3JkLCBkaXN0YW5jZT1zcXJ0KHguY29vcmRpbmF0ZV4yICsgeS5jb29yZGluYXRlXjIpKQpgYGAKCioqTm90ZSoqOiBgbXV0YXRlKClgIGFkZHMgdGhlIGNvbHVtbiBhdCB0aGUgZW5kIG9mIHRoZSBgdGliYmxlYDsgaWYgeW91IHdhbnQgaXQKYXQgYSBkaWZmZXJlbnQgcG9zaXRpb24gdXNlIGBzZWxlY3RgIHRvIHJlb3JkZXIgdGhlIHZhcmlhYmxlcyBhZnRlcndhcmRzLgoKIyMjIEV4ZXJjaXNlcwoxLiBBZGQgYSBuZXcgY29sdW1uIHRoYXQgY29udGFpbnMgdGhlIHRpbWUgZGlmZmVyZW5jZSBiZXR3ZWVuIHRoaXMgeWVhciwgMjAyMCwKYW5kIHRoZSB5ZWFyIHRoZSB2aXJ1cyB3YXMgaXNvbGF0ZWQuCjIuIFNhdmUgdGhlIHJlc3VsdCBvZiB0aGlzIGBtdXRhdGVgIGluIGEgbmV3IG9iamVjdC4KMy4gTW92ZSB0aGUgbmV3IGNvbHVtbiBiZXR3ZWVuIHRoZSBgeWVhcmAgYW5kIGBjbHVzdGVyYCBjb2x1bW5zLgoKCiMjIFNlbGVjdCBvZiBzdWJzZXQgb2Ygb2JzZXJ2YXRpb25zIHdpdGggYGZpbHRlcigpYApgc2VsZWN0YCBjcmVhdGVzIGEgc3Vic2V0IG9mIHRoZSBpbnB1dCBkYXRhIGJ5IHNlbGVjdGluZwp2YXJpYWJsZXMuIGBmaWx0ZXIoKWAgYWxsb3dzIHVzIHRvIHN1YnNldCBvdXIgaW5wdXQgZGF0YSBieSBvYnNlcnZhdGlvbnMuCkFzIGEgZmlyc3QgYXJndW1lbnQgaXQgdGFrZXMgdGhlIG5hbWUgb2YgdGhlIGB0aWJibGVgOyB0aGlzCmlzIGZvbGxvd2VkIGJ5IGV4cHJlc3Npb25zIHRoYXQgZmlsdGVyIG9ic2VydmF0aW9ucyBiYXNlZCBvbiB0aGVpciB2YWx1ZSBpbiB0aGUKc3BlY2lmaWVkIHZhcmlhYmxlcy4gRmlsdGVyaW5nIHVzZXMgdGhlIHN0YW5kYXJkIHNldCBvZiBjb21wYXJpc29uIG9wZXJhdG9ycyAKYXZhaWxhYmxlIGluIFIuCgojIyMgQ29tcGFyaXNvbnMKQ29tcGFyaXNvbiBvcGVyYXRvcnMgaW4gUjoKCiogYD09YDogZXF1YWwgdG8KKiBgIT1gOiBub3QgZXF1YWwgdG8KKiBgPmA6IGdyZWF0ZXIgdGhhbgoqIGA+PWA6IGdyZWF0ZXIgb3IgZXF1YWwgdGhhbgoqIGA8YDogbGVzcyB0aGFuCiogYDw9YDogbGVzcyBvciBlcXVhbCB0aGFuCgoqKk5vdGUqKjogV2hlbiB0ZXN0aW5nIGZvciBlcXVhbGl0eSwgbWFrZSBzdXJlIHRvIHVzZSBgPT1gIGFuZCBub3QgYSBzaW1wbGUgYD1gIQoKRm9yIGluc3RhbmNlLCB0aGUgZm9sbG93aW5nIGNvZGUgbGV0J3MgdXMgc2VsZWN0IGFsbCBvYnNlcnZhdGlvbnMgb2YgdmlydXNlcwppbiBjaXJjdWxhdGlvbiBiZWZvcmUgMTk4ODoKYGBge3J9CmZpbHRlcihjb29yZCwgeWVhciA8IDE5ODgpCmBgYAoKSW4gYWRkaXRpb24gdG8gdGhlc2UgY29tcGFyaXNvbiBvcGVyYXRvcnMsIHdlIGNhbiBhbHNvIHVzZSBib29sZWFuIG9wZXJhdG9ycyB0bwpmaWx0ZXIgdGhlIGlucHV0IGRhdGEuIFRoZSBzaW1wbGVzdCBib29sZWFuIG9wZXJhdG9yIGlzIGludHJpbnNpYyB0byB0aGUgCmBmaWx0ZXJgIGZ1bmN0aW9uOiBtdWx0aXBsZSBhcmd1bWVudHMgdG8gYGZpbHRlcigpYCBhcmUgY29tYmluZWQgd2l0aCAqYW5kKiwKaS5lLiBldmVyeSBleHByZXNzaW9uIGhhcyB0byBiZSB0cnVlIGZvciBhbiBvYnNlcnZhdGlvbiB0byBiZSBrZXB0IGluIHRoZQpvdXRwdXQuCkZvciBpbnN0YW5jZSwgYWxsIG9ic2VydmF0aW9ucyBvZiB2aXJ1c2VzIGluIGNpcmN1bGF0aW9uIGJlZm9yZSAxOTg4IGluCkJJTFRIT1ZFTi4KYGBge3J9CmZpbHRlcihjb29yZCwgeWVhciA8IDE5ODgsIGxvY2F0aW9uID09ICJCSUxUSE9WRU4iKQpgYGAKCkFueSBtb3JlIGNvbXBsaWNhdGVkIGNvbWJpbmF0aW9ucywgbGlrZSBpbiBjaXJjdWxhdGlvbiBiZWZvcmUgMTk4OCBidXQgbm90IGluCkJJTFRIT1ZFTiBhbmQgbm90IGluIE1BRFJJRCwgY2FuIGJlIGNvbnN0cnVjdGVkIHVzaW5nIHRoZSBsb2dpY2FsIG9wZXJhdG9ycyAqYW5kKgpgJmAsICpvciogYHxgIGFuZCAqbm90KiBgIWAuIFRoZSBncmFwaGljIGJlbG93IHNob3dzIGEgY29tcGxldGUgb3ZlcnZpZXcgb2YKc2VsZWN0aW9uIGxvZ2ljYWwgc3Vic2V0cyBvZiBvYnNlcnZhdGlvbnMgZm9yIHR3byB2YXJpYWJsZXMgInJlZCIgYW5kICJibHVlIjoKCmBgYHtyIGVjaG8gPSBGQUxTRX0Ka25pdHI6OmluY2x1ZGVfZ3JhcGhpY3MoImltYWdlcy9vcGVyYXRvcnMuanBnIiwgZHBpPTUwMCkKYGBgCgoKVXNpbmcgdGhlc2UgbG9naWNhbCBvcGVyYXRvcnMsIHdlIGNhbiBmaWx0ZXIgZm9yIHZpcnVzZXMgaW4gY2lyY3VsYXRpb24gYmVmb3JlCjE5ODggYnV0IG9ubHkgaW4gQklMVEhPVkVOIG9yIGluIE1BRFJJRDoKCmBgYHtyfQpmaWx0ZXIoY29vcmQsIHllYXIgPCAxOTg4LCBsb2NhdGlvbiA9PSAiQklMVEhPVkVOIiB8IGxvY2F0aW9uID09ICJNQURSSUQiKQpgYGAKQWx0ZXJuYXRpdmVseSwgd2UgY2FuIHNvbHZlIHRoZSBhYm92ZSB1c2luZyB0aGUgYHggJWluJSB5YCBzeW50YXg6CmBgYHtyfQpmaWx0ZXIoY29vcmQsIHllYXIgPCAxOTg4LCBsb2NhdGlvbiAlaW4lIGMoIkJJTFRIT1ZFTiIsICJNQURSSUQiKSkKYGBgCndoZXJlIHdlIHNlbGVjdCBldmVyeSByb3cgd2hlcmUgYHhgLCBpbiB0aGlzIGNhc2UgbG9jYXRpb24sIGlzIGNvbnRhaW5lZAppbiBgeWAsIGhlcmUgYSB2ZWN0b3Igb2YgbmFtZXMuCgoqKk5vdGUqKjogdmVjdG9ycyBhcmUgUiBkYXRhIG9iamVjdHMgYW5kIGFyZSBjb25zdHJ1Y3RlZCBieSBlbmNsb3NpbmcgdGhlCnZhcmlhYmxlc2B4YCwgYHlgLCBgemAgdG8gYmUgcHV0IGluIHRoZSB2ZWN0b3IgaW4gYGMoKWA6IGBjKHgseSx6KWAKCiMjIyBFeGVyY2lzZXMKMS4gRmluZCB2aXJ1c2VzIHRoYXQgd2VyZSBpc29sYXRlZCBpbiB0aGUgTkVUSEVSTEFORFMuCjIuIEZpbHRlciBmb3Igcm93cyB0aGF0IGFyZSBvZiB0eXBlIGFudGlnZW4gKEFHKS4gCjMuIEZpbmQgdmlydXNlcyBpbiBjaXJjdWxhdGlvbiBhZnRlciAxOTk3IGFuZCBhcmUgYXNzaWduZWQgdG8gZWl0aGVyIGNsdXN0ZXIKU1k5NyBvciBjbHVzdGVyIFdVOTUuCgojIyBHcm91cCBhbmFseXNlcyBhbmQgc3VtbWFyaXNlIG9ic2VydmF0aW9ucyB3aXRoIGBncm91cF9ieWAgYW5kIGBzdW1tYXJpc2UoKWAKIGBncm91cF9ieWAgYW5kIGBzdW1tYXJpc2UoKWAgb2Z0ZW4gZ28gaGFuZCBpbiBoYW5kOiB1c2luZyBgZ3JvdXBfYnlgLCB3ZSBjYW4KIGZpcnN0IGdyb3VwIG9ic2VydmF0aW9uIGJhc2VkIG9uIHZhbHVlcyBpbiB0aGUgc3BlY2lmaWVkIHZhcmlhYmxlIGFuZCB0aGVuCiBhcHBseSBhIHN1bW1hcnkgc3RhdGlzdGljIG9uIHRoaXMgZ3JvdXAuIFRoaXMgbWlnaHQgc291bmQgYSBiaXQgY29tcGxpY2F0ZWQsCiBzbyBsZXQncyBoYXZlIGEgbG9vayBhdCBhbiBleGFtcGxlLiBXZSBhcmUgZmlzdCBnb2luZyB0byBncm91cCBgY29vcmRgIGJ5CiBjbHVzdGVyLiBUbyBwYXNzIHRoaXMgZ3JvdXBlZCBgdGliYmxlYCBvbnRvIHRoZSBgc3VtbWFyaXNlYCBmdW5jdGlvbiwgd2UKIGhhdmUgdG8gc2F2ZSB0aGUgZ3JvdXBlZCBgdGliYmxlYCBpbnRvIGEgbmV3IG9iamVjdCAoZm9yIG5vdywgd2Ugd2lsbCBzZWUKIGZ1cnRoZXIgZG93biBob3cgd2UgY2FuIGRvIHRoaXMgbW9yZSBlbGVnYW50bHkpLiBXZSBwYXNzIHRoaXMgbmV3IG9iamVjdCB0byAKIGBzdW1tYXJpc2VgLCB0byBmaW5kIHRoZSBzdGFydCBhbmQgZW5kIHllYXIgb2YgY2lyY3VsYXRpb24gZm9yIHZpcnVzZXMgcGVyCiBjbHVzdGVyLiBUbyBmaW5kIHRoZSBzdGFydCBhbmQgZW5kIHllYXIsIHdlIGNhbiB1c2UgdGhlIFIgZnVuY3Rpb25zIGBtaW5gIGFuZAogYG1heGAsIHRoYXQgZmluZCB0aGUgbWluaW11bSBhbmQgbWF4aW11bSBlbnRyeSBvZiBhIGB0aWJibGVgIGNvbHVtbiBvciB2ZWN0b3IsIAogcmVzcGVjdGl2ZWx5OgoKYGBge3J9CmNvb3JkX2dyb3VwZWQgPC0gZ3JvdXBfYnkoY29vcmQsIGNsdXN0ZXIpCnN1bW1hcmlzZShjb29yZF9ncm91cGVkLAogICAgICAgICAgc3RhcnQ9bWluKHllYXIpLAogICAgICAgICAgZW5kPW1heCh5ZWFyKSkgICAKYGBgCkZ1bmN0aW9ucyB1c2VkIHdpdGggYHN1bW1hcmlzZWAgaGF2ZSB0byByZXR1cm4gYSBzaW5nbGUgdmFsdWUuIE90aGVyIHVzZWZ1bCAKZnVuY3Rpb25zIGFyZSBmb3IgaW5zdGFuY2U6CgoqIGBtZWFuYDogcmV0dXJucyBtZWFuIHZhbHVlOwoqIGBtZWRpYW5gOiByZXR1cm5zIG1lZGlhbiB2YWx1ZXM7CiogYHN1bWA6IHJldHVybiB0aGUgc3VtIG9mIGlucHV0IHZhbHVlczsKKiBgbigpYDogcmV0dXJucyB0b3RhbCBjb3VudCAodGhpcyBpcyB0aGUgb25seSBvbmUgdGhhdCBkb2VzIG5vdCB0YWtlIGFuCmFyZ3VtZW50KTsKKiBgbl9kaXN0aW5jdGA6IHJldHVybnMgdGhlIHVuaXF1ZSBjb3VudDsKCiMjIyBFeGVyY2lzZXMKMS4gSG93IGRvIHlvdSBrbm93IGlmIGEgYHRpYmJsZWAgaXMgZ3JvdXBlZCBvciBub3Q/IEhvdyBkbyB5b3UgdW5ncm91cCBhIGdyb3VwZWQKYHRpYmJsZWAgKEhpbnQ6IHVzZSB0aGUgaGVscCBmdW5jdGlvbiBvZiBgZ3JvdXBfYnlgKS4KMi4gV2hhdCBoYXBwZW5zIGlmIHlvdSB1c2UgdGhlIHNhbWUgYHN1bW1hcmlzZWAgY29tbWFuZCBvbiB0aGUgb3JpZ2luYWwsCnVuZ3JvdXBlZCBgdGliYmxlYD8KMi4gRmluZCB0aGUgbWVhbiB4IGFuZCB5IGNvb3JkaW5hdGUgb2YgZWFjaCBjbHVzdGVyLgozLiBGaW5kIHRoZSB0b3RhbCBhbmQgZGlzdGluY3QgbnVtYmVyIG9mIGxvY2F0aW9ucyBwZXIgY2x1c3Rlci4KCiMgQ3JlYXRpbmcgYSB3b3JrZmxvdyB3aXRoIHBpcGVzCldlIGhhdmUgc2VlbiBhYm92ZSBob3cgdXNlZnVsIGl0IGlzIHRvIGZpcnN0IHVzZSBgZ3JvdXBfYnlgIGFuZCB0aGVuIGBzdW1tYXJpc2VgIApvbiB0aGUgZ3JvdXBlZCBgdGliYmxlYC4gSG93ZXZlciwgd2UgaGFkIHRvIGZpcnN0IHNhdmUgdGhlIGdyb3VwZWQgYHRpYmJsZWAgaW4KYSBuZXcgb2JqZWN0LCB0aGF0IHdlIHBhc3NlZCBvbiB0byBzdW1tYXJpc2UuIFRoaXMgb2JqZWN0IHNvbGVseSBzZXJ2ZWQgdGhlCnB1cnBvc2Ugb2YgYW4gaW50ZXJtZWRpYXRlIHN0ZXAgaW4gb3VyIHdvcmtmbG93LiBUbyBhdm9pZCBoYXZpbmcgdG8gY3JlYXRlCmludGVybWVkaWF0ZSBvYmplY3RzLCB3ZSBjYW4gdXNlIHRoZSBwaXBlIGZ1bmN0aW9uIGAlPiVgLiBUbyBkbyB0aGUgc2FtZQpncm91cGluZyBhbmQgc3VtbWFyaXNpbmcgYXMgYWJvdmUsIHdlIGNhbiBub3cgc2ltcGx5IHdyaXRlOgoKYGBge3J9CmNvb3JkICU+JSAKICAgIGdyb3VwX2J5KGNsdXN0ZXIpICU+JQogICAgc3VtbWFyaXNlKHN0YXJ0PW1pbih5ZWFyKSwgZW5kPW1heCh5ZWFyKSkgICAKYGBgCgp3aGVyZSB3ZSBwaXBlIGBjb29yZGAgaW50byB0aGUgZ3JvdXBpbmcgZnVuY3Rpb24sIGFuZCB0aGVuIHBpcGUgdGhlIG91dHB1dCAKb2YgdGhhdCBpbnRvIHRoZSBzdW1tYXJpc2UgZnVuY3Rpb24uCgpUaGlzIGlzIHJlYWxseSBwb3dlcmZ1bCBhbmQgZWxlZ2FudCwgd2hlbiB3ZSBoYXZlIHRvIGFwcGx5IG1hbnkgcHJvY2Vzc2luZyBzdGVwcwp0byBvdXIgZGF0YSBhbmQgd2FudCB0byBhdm9pZCBoYXZpbmcgdG8gY3JlYXRlIGxvdCdzIG9mIGludGVybWVkaWF0ZSBvYmplY3RzLgoKRm9yIGluc3RhbmNlLCBpbiB0aGlzIGNodW5rLCB3ZSBhcHBseSBncm91cGluZyBieSBjbHVzdGVyLCB0aGVuIHN1bW1hcmlzZSBzdGFydCwKZW5kIGFuZCBudW1iZXIgb2YgbG9jYXRpb25zIGFuZCB0aGVuIHNvcnQgaW4gYXNjZW5kaW5nIG9yZGVyIGJ5IHN0YXJ0IHllYXIuCldlIHNhdmUgdGhlIGVudGlyZSBwcm9jZXNzIGluIGEgbmV3IG9iamVjdCBieSB1c2luZyB0aGUgYDwtYCBvcGVyYXRvci4gIAoKYGBge3J9CmNpcmN1bGF0aW9uX3N1bW1hcnkgPC0gY29vcmQgJT4lCiAgICBncm91cF9ieShjbHVzdGVyKSAlPiUKICAgIHN1bW1hcmlzZShzdGFydD1taW4oeWVhciksCiAgICAgICAgICAgICAgZW5kPW1heCh5ZWFyKSwKICAgICAgICAgICAgICBsb2NhdGlvbj1uX2Rpc3RpbmN0KGxvY2F0aW9uKSkgJT4lCiAgICBhcnJhbmdlKHN0YXJ0KSAKYGBgCgpXZSBjYW4gdGhlbiB2aXN1YWxpc2UgdGhlIGNsdXN0ZXIgdHJhbnNpdGlvbiBvdmVyIHRpbWUgaW4gYSBzZWdtZW50IHBsb3QuIFdlCmFkZGl0aW9uYWxseSBtYXAgdGhlIG51bWJlciBvZiBkaXN0aW5jdCBsb2NhdGlvbnMgdG8gdGhlIHNpemUgYWVzdGhldGljLCB0bwp2aXN1YWxpc2UgdGhlIGl0cyBzcHJlYWQuCgpgYGB7cn0KY2lyY3VsYXRpb25fc3VtbWFyeSA8LSBjb29yZCAlPiUKICAgIGdyb3VwX2J5KGNsdXN0ZXIpICU+JQogICAgc3VtbWFyaXNlKHN0YXJ0PW1pbih5ZWFyKSwKICAgICAgICAgICAgICBlbmQ9bWF4KHllYXIpLAogICAgICAgICAgICAgIGxvY2F0aW9uPW5fZGlzdGluY3QobG9jYXRpb24pKSAlPiUKICAgIGFycmFuZ2Uoc3RhcnQpCgpwIDwtIGdncGxvdChjaXJjdWxhdGlvbl9zdW1tYXJ5KQpwICsgZ2VvbV9zZWdtZW50KGFlcyh4PXN0YXJ0LCB4ZW5kPWVuZCwgeT1jbHVzdGVyLCB5ZW5kPWNsdXN0ZXIsCiAgICAgICAgICAgICAgICAgICAgIHNpemU9bG9jYXRpb24pLCBjb2xvcj0iYmx1ZSIpICsKICAgIGxhYnMoeD0iWWVhciIsCiAgICAgICAgIHk9IkFudGlnZW5pYyBjbHVzdGVyIiwKICAgICAgICAgc2l6ZT0iRGlzdGluY3QgbG9jYXRpb25zIikgKwogICAgdGhlbWVfYncoKQpgYGAKVGhpcyBwbG90IGRvZXMgbm90IHlpZWxkIHRoZSByZXN1bHQgd2UgZXhwZWN0ZWQuIERlc3BpdGUgdXMgaGF2aW5nIGFycmFuZ2VkCnRoZSBgdGliYmxlYCBieSBzdGFydCB5ZWFyLCB0aGlzIGlzIG5vdCB0aGUgb3JkZXIgaXQgd2FzIHBsb3R0ZWQuIFRoaXMgaXMgCnNvbWV0aGluZyB2ZXJ5IGNvbmZ1c2luZyB0byBiZWdpbm5lcnMgYW5kIGV2ZW4gbW9yZSBleHBlcmllbmNlZCBSIHVzZXJzIApzdHVtYmxlIG92ZXIgdGhpcyBmcm9tIHRpbWUgdG8gdGltZS4gV2hlbiB1c2luZyBhIGNoYXJhY3RlciBjb2x1bW4gKGhlcmUgY2x1c3RlcgpuYW1lcykgYXMgYWVzLCBgZ2dwbG90YCB0cmVhdHMgaXQgYXMgYSBmYWN0b3IgY29sdW1uICh3ZSBtZW50aW9uZWQgZmFjdG9ycwphcyBhIHJlcHJlc2VudGF0aW9uIG9mIGNhdGVnb3JpY2FsIHZhcmlhYmxlcyB3aXRoIGZpeGVkIHBvc3NpYmxlIHZhbHVlcykuCkJ5IGNvbnZlcnRpbmcgY2hhcmFjdGVycyB0byBmYWN0b3JzLCB0aGUgdmFsdWVzIGFyZSBpbnRlcm5hbGx5IG9yZGVyZWQKYWxwaGFiZXRpY2FsbHksIHdoaWNoIGluIHRoaXMgY2FzZSBkaXNydXB0cyB0aGUgb3JkZXJpbmcgd2UgZGVzaXJlZC4gCgpUbyBwcmV2ZW50IHRoaXMsIHdlIGNhbiBleHBsaWN0bHkgY29udmVydCB0aGUgY2x1c3RlciBjb2x1bW4gaW50byBhIGZhY3RvciBhbmQgCmVuZm9yY2UgdGhlIG9yaWdpbmFsIG9yZGVyIGJ5IHRoZSBgZmN0X2lub3JkZXJgIGZ1bmN0aW9uLiBXZSBjYW4gY2hhaW4gdGhpcwpwcm9jZXNzaW5nIG9udG8gb3VyIHByZXZpb3VzIHdvcmtmbG93IHVzaW5nIGEgcGlwZSBhbmQgdGhlIGBtdXRhdGVgIGZ1bmN0aW9uLgoKVGhlIHNlZ21lbnQgcGxvdCB3aXRoIHRoZSBvcmRlcmVkIGZhY3RvciBhcyB5LWxhYmVscyBsb29rcyBhcyB3ZSBleHBlY3Q6CmBgYHtyfQpjaXJjdWxhdGlvbl9zdW1tYXJ5IDwtIGNvb3JkICU+JQogICAgZ3JvdXBfYnkoY2x1c3RlcikgJT4lCiAgICBzdW1tYXJpc2Uoc3RhcnQ9bWluKHllYXIpLAogICAgICAgICAgICAgIGVuZD1tYXgoeWVhciksCiAgICAgICAgICAgICAgbG9jYXRpb249bl9kaXN0aW5jdChsb2NhdGlvbikpICU+JQogICAgYXJyYW5nZShzdGFydCkgJT4lCiAgICBtdXRhdGUoY2x1c3Rlcj1mY3RfaW5vcmRlcihjbHVzdGVyKSkKCnAgPC0gZ2dwbG90KGNpcmN1bGF0aW9uX3N1bW1hcnkpCnAgKyBnZW9tX3NlZ21lbnQoYWVzKHg9c3RhcnQsIHhlbmQ9ZW5kLCB5PWNsdXN0ZXIsIHllbmQ9Y2x1c3RlciwKICAgICAgICAgICAgICAgICAgICAgc2l6ZT1sb2NhdGlvbiksIGNvbG9yPSJibHVlIikgKwogICAgbGFicyh4PSJZZWFyIiwKICAgICAgICAgeT0iQW50aWdlbmljIGNsdXN0ZXIiLAogICAgICAgICBzaXplPSJEaXN0aW5jdCBsb2NhdGlvbnMiKSArCiAgICB0aGVtZV9idygpCmBgYAoKIyMgRXhlcmNpc2VzCjEuIENyZWF0ZSBhIHBpcGVkIHdvcmtmbG93IHRoYXQgZmluZHMgdGhlIG51bWJlciBvZiBkaXN0aW5jdCBjbHVzdGVycyBhbmQgdGhlCmZpcnN0IHZpcnVzIGlzb2xhdGlvbiBmb3IgZWFjaCBsb2NhdGlvbi4KCgoKIyBSZWZlcmVuY2Vz</div>
 
 
 </div>
