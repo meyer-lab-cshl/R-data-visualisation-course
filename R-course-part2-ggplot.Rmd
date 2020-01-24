@@ -584,12 +584,12 @@ We use the `geom_sf` to display the world map and a points layer with
 
 
 ```{r world coordinates}
-locations <- read_csv("data/locations.csv")
 world <- ne_countries(scale = "medium", returnclass = "sf")
 
 g <- ggplot()
 g + geom_sf(data = world) +
-  geom_point(data=locations, aes(x=lng, y=lat), color="blue")
+  geom_point(data=coord, aes(x=lng, y=lat, color=cluster)) +
+  scale_color_brewer(type="qual", palette = "Set3")
 ```
 
 ## Exercises
@@ -601,7 +601,7 @@ options.
 3. Customise the color scale and plot labels in the boxplot showing the 
 distribution of measurements per type and year. What happens if you choose
 `aes(fill)` instead of `aes(color)`?
-4. Change `geom_jitter` to `geom_point` to see why zgeom_jitter is a better
+4. Change `geom_jitter` to `geom_point` to see why geom_jitter is a better
 visualisation of the data. Go back to using `geom_jitter` and play with the
 `width` argument to customise your plot.
 4. What would be a good `theme` for the world map? Add it to the plot.
