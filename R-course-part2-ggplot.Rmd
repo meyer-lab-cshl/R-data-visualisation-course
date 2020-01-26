@@ -3,17 +3,13 @@ title: 'Data visualisation - part 2: visualisation with ggplot2'
 author: "Hannah Meyer"
 date: "01/08/2020"
 output:
-  pdf_document:
-    number_sections: yes
-    toc: yes
-    toc_depth: 3
   html_notebook:
     number_sections: yes
     toc: yes
     toc_depth: 3
     toc_float: yes
-  html_document:
-    df_print: paged
+  pdf_document:
+    number_sections: yes
     toc: yes
     toc_depth: 3
 bibliography: bibliography.bib
@@ -102,8 +98,6 @@ applied to all chunks in the rest of the document. Specifically, it tells R
 studio that when I prepare this document for sharing with you as a pdf, that
 I want both the actual code and the results displayed in the document. It also
 specifies the width and alignment of the figures in the final document.
-
-
 ```{r setup}
 knitr::opts_chunk$set(echo = TRUE,
                       comment = "#>",
@@ -115,10 +109,8 @@ knitr::opts_chunk$set(echo = TRUE,
 I then follow with a chunk that loads all libraries required for my analysis.
 The following chunk loads the libraries that you installed as a preparation for
 the course into your R workspace:
-
 ```{r libraries, message=FALSE}
 library("tidyverse")
-library("cowplot")
 library("sf")
 library("rnaturalearth")
 library("RColorBrewer")
@@ -360,11 +352,13 @@ p +
   geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
   scale_color_brewer(type="qual", palette = "Set1")
 ```
+
 5. Why does this code not color all points in red?
 ```{r}
 p +
   geom_point(aes(x=x.coordinate, y=y.coordinate, color="red")) 
 ```
+
 6. Advanced: Change the overall shape of points to number 24 triangles, than
 color by cluster and fill by type.
 
@@ -558,6 +552,7 @@ p + geom_boxplot(aes(x=type, y=year, color=type)) +
   geom_jitter(aes(x=type, y=year, color=type)) +
   theme_bw()
 ```
+
 ## Geographical maps
 So far, we have worked with visualisations of continuous, discrete and
 categorical variables. We have worked with the `year` (discrete/continuous),
@@ -605,5 +600,14 @@ distribution of measurements per type and year. What happens if you choose
 visualisation of the data. Go back to using `geom_jitter` and play with the
 `width` argument to customise your plot.
 4. What would be a good `theme` for the world map? Add it to the plot.
+
+# Additional material
+For future reading on data visualisation, selecting appropriates aesthetics
+and scales and avoiding common pitfalls, I recommend the book
+[Fundamentals of Data Visualization](https://serialmentor.com/dataviz/)
+@Wilke2019 (with free online version!).
+
+A great overview of the most appropriate graph for your data type can be found
+on this website: [From data to viz](https://www.data-to-viz.com/).
 
 # References
