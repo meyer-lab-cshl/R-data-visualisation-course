@@ -3,19 +3,19 @@ title: 'Data visualisation - part 3: compound figures with cowplot'
 author: "Hannah Meyer"
 date: "01/08/2020"
 output:
+  pdf_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_depth: 3
   html_notebook:
     number_sections: yes
     toc: yes
     toc_depth: 3
     toc_float: yes
-  html_document:
-    df_print: paged
-    toc: yes
-    toc_depth: 3
-  pdf_document:
-    number_sections: yes
-    toc: yes
-    toc_depth: 3
 bibliography: bibliography.bib
 ---
 
@@ -58,7 +58,7 @@ library("RColorBrewer")
 
 # Individual visualisations
 In the following section, we will load the dataset we worked with in the
-previous session and recreate the visualisations, we used to show the antigenic
+previous session and recreate the visualisations we used to show the antigenic
 maps, histogram and boxplots of the clusters by time.
 
 Unlike the previous session, where we immediately displayed the output
@@ -138,11 +138,11 @@ plot_grid(time_barplot, time_boxplot,
 ```
 
 ### Alignment
-You might notice, that in the one column layout, the plots are slightly shifted
-with respect to their y-axis and legends alignment. As default, `plot_grid`
-keeps the axis titles aligned. To align by axis, we can use a combination of
-the `align` and `axis` arguments. Here we want the plots to be vertically
-aligned along the left and right margins of the plot panel:
+You might notice that in the one column layout, the plots are slightly shifted
+with respect to their y-axis and legends alignment. Per default, `plot_grid`
+keeps the *axis titles* aligned. To align by *actual axis*, we can use a
+combination of the `align` and `axis` arguments. Here we want the plots to be
+vertically aligned along the left and right margins of the plot panel:
 
 ``` {r, fig.height=7}
 plot_grid(time_barplot, time_boxplot,
@@ -231,7 +231,7 @@ First, we will create the individual components of our panel, this time adding
 `legend.position` via `theme`. We create the `right_column`, similar
 as above, but, in addition, specify that in this `plot_grid`, the boxplot legend
 should move below the plot (`theme(legend.position = "bottom")`) and the legend
-from the barplot with `theme(legend.position = "none")` should be removed.
+from the barplot should be removed with `theme(legend.position = "none")`.
 Similarily, we remove the the legend from the `antigenic_map` that we pass to
 `plot_grid`.
 
@@ -269,7 +269,7 @@ cluster_legend <- get_legend(new_map)
 ```
 
 Finally, we will put it all together in a new call to `plot_grid`. In addition
-to the arguments that we have already seen for plot_grid, we also specify
+to the arguments that we have already seen for `plot_grid`, we also specify
 `rel_heights` here, which says that the ratio of the first row (i.e. our
 compound panel) to the second row (the shared legend) should be 10:1.
 
@@ -306,7 +306,7 @@ plot_grid(antigenic_map + theme_gray() + ggtitle("Default ggplot"),
           axis="tblr")
 ```
 
-All themes are `cowplot` themes apart from two `ggplot2` themes shown for
+All themes are `cowplot` themes apart from the default `ggplot2` theme shown for
 reference. The lower right plot shows `theme_nothing` by `cowplot`.
 
 **Note**:
