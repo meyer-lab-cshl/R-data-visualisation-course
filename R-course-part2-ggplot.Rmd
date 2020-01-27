@@ -3,15 +3,15 @@ title: 'Data visualisation - part 2: visualisation with ggplot2'
 author: "Hannah Meyer"
 date: "01/08/2020"
 output:
-  pdf_document:
-    number_sections: yes
-    toc: yes
-    toc_depth: 3
   html_notebook:
     number_sections: yes
     toc: yes
     toc_depth: 3
     toc_float: yes
+  pdf_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
 bibliography: bibliography.bib
 ---
 
@@ -76,7 +76,7 @@ analysis.
 For this setting go to *RStudio > Preferences* (on Mac) and ** (windows/unix).
 In *General* untick *restore .RData into workspace at startup*. 
 
-We are all set now to go ahead with your first analyis and data visualisation
+We are all set now to go ahead with your first analysis and data visualisation
 in R!
 
 ## Setting up an analysis report
@@ -87,10 +87,10 @@ actually contains the analyses commands.
 The text follows some simple markdown rules (for instance bold header sections
 etc, which we will not go into detail here). Important for us at this stage is
 that whenever we want to include analysis code into the document, we have
-to create an R code *chunk*. To include a new *chunk* click the _Insert_ buttom
+to create an R code *chunk*. To include a new *chunk* click the _Insert_ button
 at the top of your editor window and select _R_.
 
-All code *chunks* have some default settings, concering their layout, execution
+All code *chunks* have some default settings, concerning their layout, execution
 etc, which can be heavily customised. For our beginners tutorial, we do not
 have to worry about all of these. I mention this here, as the following and
 first chunk of our document contains some basic options that I want to have
@@ -111,7 +111,7 @@ knitr::opts_chunk$set(echo = TRUE,
 I then follow with a chunk that loads all libraries required for my analysis.
 The following chunk loads the libraries that you installed as a preparation for
 the course into your R workspace:
-```{r libraries, message=FALSE}
+```{r, message=FALSE}
 library("tidyverse")
 library("sf")
 library("rnaturalearth")
@@ -158,7 +158,7 @@ In the following chunk, we pass the filename of this formated data set, located
 in the data folder of your project, as the argument to the
 `read_csv` function and assign the ouput to a new object called `coord`.
 
-```{r paths}
+```{r}
 coord <- read_csv("data/2004_Science_Smith_data.csv")
 ```
 `read_csv()` prints out a column specification that gives the name and type of
@@ -240,7 +240,7 @@ never start a new layer with a `+`.
 
 ## Our first plot
 
-```{r first plot}
+```{r}
 p <- ggplot(data=coord)
 p + geom_point(mapping=aes(x=x.coordinate, y=y.coordinate))
 ```
@@ -265,7 +265,7 @@ Let's start by introducing color to the plot. As in the original publication,
 we can color the points in our plot by cluster name. We do this by simpling 
 specifying the color aestetic in the mapping:
 
-```{r color aes}
+```{r}
 p + geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster))
 ```
 
@@ -300,12 +300,12 @@ The [colorbrewer website](http://colorbrewer2.org/) provides a great resource
 to pick appropriate color scales.
 
 `ggplot2` has direct access to these color schemes:
-```{r brewer, fig.asp = 2.5, echo = FALSE}
+```{r, fig.asp = 2.5, echo = FALSE}
 par(mar = c(0, 3, 0, 0))
 RColorBrewer::display.brewer.all()
 ```
 
-```{r color scale}
+```{r}
 p +
   geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
   scale_color_brewer(type="qual", palette = "Set3")
@@ -314,7 +314,7 @@ p +
 ### Shape scales
 There are 25 point shapes available in R:
 
-```{r point shapes, echo=FALSE}
+```{r, echo=FALSE}
 positions <- tibble(y=rev(c(rep(1,6),rep(2,5), rep(3,5), rep(4,5), rep(5,5))),
                     x=c(rep(1:5,5),6),
                     text=0:25)
@@ -335,7 +335,7 @@ In addition, we could also decide that we would like to display all our points
 in the data set as number 17 triangles. To set an aesthetic manually, you move
 it outside the mapping argument and specify the level:
 
-```{r manual aesthetic}
+```{r}
 p +
   geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster), shape=17) +
   scale_color_brewer(type="qual", palette = "Set3") 
@@ -355,10 +355,10 @@ p +
   scale_color_brewer(type="qual", palette = "Set1")
 ```
 
-5. Why does this code not color all points in red?
+5. Why does this code not color all points in blue?
 ```{r}
 p +
-  geom_point(aes(x=x.coordinate, y=y.coordinate, color="red")) 
+  geom_point(aes(x=x.coordinate, y=y.coordinate, color="blue")) 
 ```
 
 6. Advanced: Change the overall shape of points to number 24 triangles, than
@@ -379,7 +379,7 @@ automatically chose the axis limits and more importantly here, their ratios.
 We can easily change this default by adding a `coord_xx` layer, in this case
 `coord_fixed`, which will ensure a 1:1 ratio per default.
 
-```{r coordinate system}
+```{r}
 p + 
   geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
   scale_color_brewer(type="qual", palette = "Set3") +
@@ -394,7 +394,7 @@ labels can be set by the `xlab` and `ylab` arguments respectively, the title
 is specified by the `title` argument. To change the name of a legend, we have
 to specify the aesthetic we mapped it to, in this `color`.
 
-```{r labels}
+```{r}
 p + 
   geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
   scale_color_brewer(type="qual", palette = "Set3") +
@@ -412,7 +412,7 @@ this is not to everyone's liking. As with everything else you've seen so far,
 there are some build-in options for customising. Here, we use the `theme_bw`
 to change to a white background.
 
-```{r themes}
+```{r}
 p + 
   geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
   scale_color_brewer(type="qual", palette = "Set3") +
@@ -427,13 +427,14 @@ p +
 ### Exercises
 1. What other coordinate system options exist? Hint: type `?coord_` in a new
 chunk and press tab to see other options.
-2. Rename the legend title for the `shape` aesthetic
+2. In the previous set of exercises, you added a `shape` aesthetic. Rename the
+legend title for this aesthetic
 3. Test different themes and see how it effects the plot, for instance use
 `theme_void`, `theme_dark` and `theme_classic`. Similar to Exercise 1, you can 
 type `?theme_` and tab to see other possible build in themes.
 4. Why does this not work? 
 
-```{r fail, eval=FALSE}
+```{r, eval=FALSE}
 p + 
   geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
   scale_color_brewer(type="qual", palette = "Set3") +
@@ -457,7 +458,7 @@ of the output file based on the file ending of the filename that you provide.
 For instance, the code chunk below will save our most recent plot to a pdf
 document named "antigenic_cartography.pdf". 
 
-```{r save plots}
+```{r}
 ggsave(filename="results/antigenic_cartography.pdf")
 ```
 
@@ -466,8 +467,8 @@ determines the size of the file from the size we chose for displaying the plot
 in out analysis. To make it reproducible, it is good practice to specify the
 size and units. 
 
-```{r save plots parameters}
-ggsave(filename="results/antigenic_cartography.pdf", width=5, height=8,
+```{r}
+ggsave(filename="results/antigenic_cartography.pdf", width=10, height=16,
        unit="cm")
 ```
 **Note**: `ggsave` overwrites the previous file of that name without warning!
@@ -510,7 +511,7 @@ display bars next to each other, we have to specify `position_dodge`,
 and setting `preserve="single"`, keeps a constant width for each bar. More on
 this in the exercises to this section.
 
-```{r }
+```{r}
 p + geom_bar(aes(x=year, fill=cluster),
              position=position_dodge(preserve="single")) +
   scale_fill_brewer(type="qual", palette = "Set3") +
@@ -525,7 +526,7 @@ good insight with `?geom_histogram`:
                 widths to find the best to illustrate the stories in your data
                 [...].
 
-```{r histogram}
+```{r}
 p + geom_histogram(aes(x=year, fill=cluster),
              position=position_dodge(preserve="single"),
              binwidth = 10) +
@@ -549,7 +550,7 @@ can add a `geom_jitter` to the plot. It plots the original y-values and adds
 a jitter to the x-values to avoid overplotting.
 
  
-```{r }
+```{r}
 p + geom_boxplot(aes(x=type, y=year, color=type)) +
   geom_jitter(aes(x=type, y=year, color=type)) +
   theme_bw()
@@ -580,7 +581,7 @@ We use the `geom_sf` to display the world map and a points layer with
 `geom_point` to visualise the locations.
 
 
-```{r world coordinates}
+```{r}
 world <- ne_countries(scale = "medium", returnclass = "sf")
 
 g <- ggplot()
