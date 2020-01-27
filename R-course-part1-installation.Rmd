@@ -3,15 +3,15 @@ title: "Data visualisation - part 1: installing software"
 author: "Hannah Meyer"
 date: "01/08/2020"
 output:
-  pdf_document:
-    number_sections: yes
-    toc: yes
-    toc_depth: 3
   html_notebook:
     number_sections: yes
     toc: yes
     toc_depth: 3
     toc_float: yes
+  pdf_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
 ---
 
 # Welcome!
@@ -68,6 +68,7 @@ install.packages("cowplot")
 install.packages("sf")
 install.packages("rnaturalearth")
 install.packages("RColorBrewer")
+install.packages("rgeos")
 ```
 
 # Test your installation
@@ -77,8 +78,7 @@ yet, we will discuss them during the course. For now, we just want to make sure
 we can get started with the right set up on the day of the course.
 
 Please copy the following lines into your terminal and hit enter:
-
-```{r load libraries, message=FALSE, eval=TRUE}
+```{r, message=FALSE, eval=TRUE}
 library("tidyverse")
 library("forcats")
 library("cowplot")
