@@ -66,14 +66,14 @@ of each `ggplot2` call, we will now save each plot into a different object.
 To do so, we will first create the common `ggplot` object `p`, that relies
 on our dataset `coord`:
 
-```{r load data}
+```{r}
 coord <- read_csv("data/2004_Science_Smith_data.csv")
 p <- ggplot(data=coord)
 ```
 
 To recreate the previous plots, we save them into a new object by adding the
 appropriate layers to `p`:
-```{r recreate plots}
+```{r}
 antigenic_map <- p + 
   geom_point(aes(x=x.coordinate, y=y.coordinate, color=cluster)) +
   scale_color_brewer(type="qual", palette = "Set3") +
@@ -106,7 +106,7 @@ arranges them into a grid.
 # Simple compound plots
 To generate our first compound figure, we provide the bar and boxplot objects to
 `plot_grid`, which arranges them in a single row, next to one another.
-``` {r}
+```{r}
 plot_grid(time_barplot, time_boxplot)
 ```
 ## Customising `plot_grid`
@@ -120,7 +120,7 @@ the number of plots (as we do here for 2 plots) or by setting `labels="AUTO"` to
 auto-generate upper-case labels or `labels="auto"` to auto-generate lower-case
 labels.
 
-``` {r}
+```{r}
 plot_grid(time_barplot, time_boxplot,
           labels=c(1,2))
 
@@ -131,7 +131,7 @@ Per default, `plot_grid` chooses a 'one row, two column' layout for the plots
 we specified. To specify a 'two row, one column' layout we can either specify the
 number of colums `ncol` or number or rows `nrow` argument:
 
-``` {r, fig.height=7}
+```{r, fig.height=7}
 plot_grid(time_barplot, time_boxplot,
           labels=c(1,2),
           nrow=2)
@@ -144,7 +144,7 @@ keeps the *axis titles* aligned. To align by *actual axis*, we can use a
 combination of the `align` and `axis` arguments. Here we want the plots to be
 vertically aligned along the left and right margins of the plot panel:
 
-``` {r, fig.height=7}
+```{r, fig.height=7}
 plot_grid(time_barplot, time_boxplot,
           labels=c(1,2),
           nrow=2,
@@ -185,7 +185,7 @@ To achieve this, we will use two calls to `plot_grid`, the first to generate
 our composite for the right-hand column, the second to put this composite 
 together with the antigenic map.
 
-``` {r,   fig.asp = 1}
+```{r, fig.asp = 1}
 right_column <- plot_grid(time_boxplot, time_barplot,
                    nrow=2,
                    align="v",
@@ -203,7 +203,7 @@ bar plot by cluster. Below, we will have a look how we can add one shared
 legend as an additional row to `plot_grid` and remove the individual legends.
 This is what our final figure will look like:
 
-``` {r,  fig.asp = 1, echo=FALSE}
+```{r, fig.asp = 1, echo=FALSE}
 right_column <- plot_grid( time_boxplot + theme(legend.position = "bottom"),
                            time_barplot + theme(legend.position = "none"),
                            nrow=2,
@@ -239,7 +239,7 @@ Similarily, we remove the the legend from the `antigenic_map` that we pass to
 `plot_grid`, the original objects remain unchanged.
 
 
-``` {r,  fig.asp = 1}
+```{r, fig.asp = 1}
 right_column <- plot_grid( time_boxplot + theme(legend.position = "bottom"),
                            time_barplot + theme(legend.position = "none"),
                            nrow=2,
@@ -260,7 +260,7 @@ specify that the color legend should have two rows for its elements with
 
 We then extract the legend from the `new_map` object with `get_legend`:
 
-```{r,  fig.asp = 1}
+```{r, fig.asp = 1}
 new_map <- antigenic_map +
   guides(color=guide_legend(nrow=2)) +
   theme(legend.position = "bottom")
@@ -273,7 +273,7 @@ to the arguments that we have already seen for `plot_grid`, we also specify
 `rel_heights` here, which says that the ratio of the first row (i.e. our
 compound panel) to the second row (the shared legend) should be 10:1.
 
-```{r,  fig.asp = 1}
+```{r, fig.asp = 1}
 plot_grid(top_row, cluster_legend,
           nrow=2,
           rel_heights = c(10,1))
@@ -292,7 +292,7 @@ Many people come to `cowplot` in the search of a function for composite figures
 extends the range of different `themes` provided by `ggplot`. Below an overview
 of available cowplot themes, all applied to the `antigenic_map` scatter plot:
 
-```{r cowplot themes, fig.asp = 2.5}
+```{r, fig.asp = 2.5}
 plot_grid(antigenic_map + theme_gray() + ggtitle("Default ggplot"),
           antigenic_map + theme_cowplot()  + ggtitle("theme_cowplot"),
           antigenic_map + theme_half_open()  + ggtitle("theme_half_open"), 
