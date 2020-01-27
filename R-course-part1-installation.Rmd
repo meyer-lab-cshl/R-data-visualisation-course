@@ -3,15 +3,15 @@ title: "Data visualisation - part 1: installing software"
 author: "Hannah Meyer"
 date: "01/08/2020"
 output:
+  pdf_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
   html_notebook:
     number_sections: yes
     toc: yes
     toc_depth: 3
     toc_float: yes
-  pdf_document:
-    number_sections: yes
-    toc: yes
-    toc_depth: 3
 ---
 
 # Welcome!
@@ -60,6 +60,9 @@ first.
 Copy the following lines into your R terminal (lower left panel) and press
 enter. You should see a lot of text being printed to the terminal, while R
 installs these packages.
+
+**Note**: If prompted to select if packages should be compiled from source,
+please enter 'no'.
 
 ```{r install libraries, message=FALSE, eval=FALSE}
 install.packages("tidyverse")
