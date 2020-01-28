@@ -51,8 +51,6 @@ load all libraries required for our analysis:
 ```{r libraries, message=FALSE}
 library("tidyverse")
 library("cowplot")
-library("sf")
-library("rnaturalearth")
 library("RColorBrewer")
 ```
 
@@ -318,7 +316,8 @@ theme applied to the scatter plot display horizontal and vertical grids.
 1. Discuss which other plot type might benefit from a simpler grid than the
 default one chosen?
 2. What happens if you add a theme to `plot_grid`?
-3. Apply different themes to the three individual plots and visualise in `grid`.
+3. Apply different themes to the three individual plots and visualise in
+`plot_grid`.
 
 
 # Additional material
