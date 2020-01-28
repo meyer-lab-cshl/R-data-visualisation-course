@@ -3,19 +3,19 @@ title: 'Data visualisation - part 3: compound figures with cowplot'
 author: "Hannah Meyer"
 date: "01/08/2020"
 output:
-  pdf_document:
-    number_sections: yes
-    toc: yes
-    toc_depth: 3
-  html_document:
-    df_print: paged
-    toc: yes
-    toc_depth: 3
   html_notebook:
     number_sections: yes
     toc: yes
     toc_depth: 3
     toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_depth: 3
+  pdf_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
 bibliography: bibliography.bib
 ---
 
@@ -94,7 +94,7 @@ time_boxplot <- p +
   geom_boxplot(aes(x=type, y=year, color=type)) +
   geom_jitter(aes(x=type, y=year, color=type)) +
   scale_color_manual(values=c("#66c2a5", "#fc8d62")) +
-  labs(x="Measurment",
+  labs(x="Measurement",
        y="Time",
        color="Measurement") +
   theme_bw()
