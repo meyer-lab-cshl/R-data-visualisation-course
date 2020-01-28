@@ -1,7 +1,8 @@
 ---
-title: "Data visualisation with R"
+title: "CSHL career development series"
+subtitle: "Data visualisation with R"
 author: "Hannah Meyer"
-date: "27/01/2020"
+date: "January 28, 2020"
 output:
   slidy_presentation:
     footer: "Data visualisation with R, January 2020"
@@ -20,17 +21,67 @@ knitr::opts_chunk$set(echo = TRUE,
 
 # Background: Antigenic cartography
 
+<div class="row" style="padding: 25px 50px 75px 50px"></div>
+<div class="row" style="padding: 25px 50px 75px 50px">
+  <div class="col-lg-6">
+```{r, echo=FALSE}
+knitr::include_graphics("images/influenza.png")
+```
+  </div>
+  <div class="col-lg-6"></div>
+</div>
+<div class="row" style="padding: 25px 50px 75px 50px">
+<center>
+adapted from (Pattinson 2019)
+</center>
+</div>
+
+# Background: Antigenic cartography
+
+<div class="row" style="padding: 25px 50px 75px 50px"></div>
+<div class="row" style="padding: 25px 50px 75px 50px">
+  <div class="col-lg-6">
+```{r, echo=FALSE}
+knitr::include_graphics("images/influenza-highlight.png")
+```
+  </div>
+  <div class="col-lg-6"></div>
+</div>
+<div class="row" style="padding: 25px 50px 75px 50px">
+<center>
+adapted from (Pattinson 2019)
+</center>
+</div>
+
+# Background: Antigenic cartography
+
+<div class="row" style="padding: 25px 50px 75px 50px"></div>
+<div class="row" style="padding: 25px 50px 75px 50px">
+  <div class="col-lg-6">
+```{r, echo=FALSE}
+knitr::include_graphics("images/influenza-highlight.png")
+```
+  </div>
+  <div class="col-lg-6">
 ```{r, echo=FALSE}
 knitr::include_graphics("images/antigenic-map.jpg")
 ```
-
+  </div>
+</div>
+<div class="row" style="padding: 25px 50px 75px 50px">
+<center>
+adapted from (Pattinson 2019), [@Smith2004]
+</center>
+</div>
 
 # Getting started with Rstudio
 
+<div class="row" style="padding: 25px 50px 75px 50px"></div>
+<div class="row" style="padding: 25px 50px 75px 50px">
 ```{r, echo=FALSE}
 knitr::include_graphics("images/R-studio-screenshot.png")
 ```
-
+</div>
 
 # Starting an Rproject for your analysis
 
@@ -43,7 +94,6 @@ you created with the course material
 ```{r, echo=FALSE}
 knitr::include_graphics("images/create-project.png")
 ```
-
 
 # Starting of with a clean slate
 
@@ -69,6 +119,22 @@ library("sf")
 library("rnaturalearth")
 library("RColorBrewer")
 ```
+
+# A primer to R functions
+
+```{r, eval=FALSE}
+function_output <- function(argument1=something, argument2=something_else)
+```
+
+|                       |                                       |
+|-------------------	|--------------------------------------	|
+| `function_output` 	| what the function returns            	|
+| `<-`              	| the assignment operator              	|
+| `function`        	| name of the function                 	|
+| `argument1`       	| first argument the function accepts  	|
+| `something`       	| our specification to argument1       	|
+| `argument2`       	| second argument the function accepts 	|
+| `something_else`  	| our specification to argument2       	|
 
 # A primer to R functions
 
@@ -185,6 +251,27 @@ head(as.data.frame(coord))
 head(coord)
 ```
 
+# Object types
+
+<div class="row" style="padding: 25px 50px 75px 50px"></div>
+<div class="row" style="padding: 25px 50px 75px 50px">
+1. `data.frame`
+2. `tibble`
+</div>
+<div class="row" style="padding: 25px 50px 75px 50px">
+  <div class="col-lg-6">
+```{r, echo=FALSE,  fig.cap="Variables"}
+knitr::include_graphics("images/variables.png")
+```
+  </div>
+  <div class="col-lg-6">
+```{r, echo=FALSE, fig.cap="Observations"}
+knitr::include_graphics("images/observations.png")
+```
+  </div>
+</div>
+<div class="row" style="padding: 25px 50px 75px 50px"></div>
+
 # Exercises: 
 
 1. Which data types are present in our dataset?
@@ -202,7 +289,7 @@ coord
 # Exercises: 
 
 2. How many observations and variables are in our dataset?
-Have a look at the second row of the ouput of:
+Have a look at the first row of the ouput of:
 ```{r}
 coord
 ```
@@ -211,17 +298,17 @@ coord
 
 3. What are the variables?
 
-|              	|   	|                                 	|
-|--------------	|---	|---------------------------------	|
-| name         	|   	| name of virus isolate           	|
-| year         	|   	| year of isolation               	|
-| cluster      	|   	| derived cluster                 	|
-| type         	|   	| serum or antigen measurement    	|
-| x.coordinate 	|   	| x coordinate in antigenic space 	|
-| y.coordinate 	|   	| y coordinate in antigenic space 	|
-| location     	|   	| location of virus measurement   	|
-| lat          	|   	| latitude of location            	|
-| lng          	|   	| longitude of location            	|
+|               	|   	|                                 	|
+|---------------	|---	|---------------------------------	|
+| `name`         	|   	| name of virus isolate           	|
+| `year`         	|   	| year of isolation               	|
+| `cluster`      	|   	| derived cluster                 	|
+| `type`         	|   	| serum or antigen measurement    	|
+| `x.coordinate` 	|   	| x coordinate in antigenic space 	|
+| `y.coordinate` 	|   	| y coordinate in antigenic space 	|
+| `location`     	|   	| location of virus measurement   	|
+| `lat`         	|   	| latitude of location            	|
+| `lng`          	|   	| longitude of location            	|
 
 # A recipe for generating graphs with ggplot2
 
@@ -293,6 +380,19 @@ ggplot(data=coord)
     - year
     - location
 
+# Aesthetics
+<div class="row" style="padding: 25px 50px 75px 50px"></div>
+<div class="row" style="padding: 25px 50px 75px 50px">
+```{r, echo=FALSE}
+knitr::include_graphics("images/aesthetics.png")
+```
+</div>
+<div class="row" style="padding: 25px 50px 75px 50px">
+<center>
+[adapted from Wilke (2019) Fundamentals of Data Visualization]
+</center>
+</div>
+
 # Mapping additional aesthetics
 
 ```{r}
@@ -302,6 +402,9 @@ p + geom_point(aes(x=x.coordinate,
 ```
 
 # Colorbrewer color scales
+```{r, eval=FALSE, echo = TRUE}
+display.brewer.all()
+```
 
 ```{r, echo=FALSE}
 knitr::include_graphics("images/color-brewer.png")
@@ -393,13 +496,12 @@ p +
 
 3. Generally speaking, which type of data lends itself to shape scales, which
 to size, which to color?
-
-* shape: distinct classes, moderate (up to 6) number of classes
-* color:
-    * distinct classes, moderate to high (up to 12) number of classes
-    * continous data that is either sequential or diverging
-* size:
-    * continous data that is either sequential or diverging
+    - shape: distinct classes, moderate (up to 6) number of classes
+    - size:
+      - continous data that is either sequential or diverging
+    - color:
+      - distinct classes, moderate to high (up to 12) number of classes
+      - continous data that is either sequential or diverging
 
 # Exercises
 4. Why does this not work?
@@ -878,3 +980,5 @@ g + geom_sf(data = world) +
 
 * overview of the most appropriate graph for your data type at *From data to viz*
 [https://www.data-to-viz.com/](https://www.data-to-viz.com/)
+
+# References
