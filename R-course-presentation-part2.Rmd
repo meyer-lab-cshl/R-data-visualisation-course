@@ -1,6 +1,6 @@
 ---
 title: "CSHL career development series"
-subtitle: "Data visualisation with R"
+subtitle: "Data visualisation with R - part 2"
 author: "Hannah Meyer"
 date: "January 28, 2020"
 output:
