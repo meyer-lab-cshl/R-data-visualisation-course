@@ -21,8 +21,8 @@ bibliography: bibliography.bib
 # Introduction
 In the previous tutorials, you have learned how to visualise your data, from
 simple scatter plots with default settings to compound figures with elaborate
-color schemes and labels. For all of these, we used the data from Smith *et al*
-(2004) (made available at the following
+color schemes and labels. For all of these, we used the data from [@Smith2004]
+(made available at the following
 [http://www.antigenic-cartography.org/](link)). I mentioned briefly in the
 previous exercises, that I had formated the data for us to work with.
 What I expressed there in a half-sentence, usually contains a lot of work, often
