@@ -1,8 +1,8 @@
 ---
 title: "CSHL career development series"
-subtitle: "Data visualisation with R - part 3"
+subtitle: "Data visualisation with R - part 3: compound figures with cowplot"
 author: "Hannah Meyer"
-date: "January 28, 2020"
+date: "January 2020"
 output:
   slidy_presentation:
     footer: "Data visualisation with R, January 2020"
@@ -15,8 +15,7 @@ bibliography: bibliography.bib
 knitr::opts_chunk$set(echo = TRUE,
                       cache = TRUE,
                       fig.align = "center",
-                      out.height = "80%",
-                      tidy.opts=list(width.cutoff=60),tidy=TRUE)
+                      out.height = "80%")
 ```
 
 # Background: cowplot
@@ -59,7 +58,8 @@ p <- ggplot(data=coord)
 
 # Individual visualisations
 
-* recreate plots from "Data visualisation with R - part 2" 
+* recreate plots from "Data visualisation with R - part 2: visualisation with
+ggplot2" 
 * save them in individual `ggplot2` objects
 
 ```{r}
@@ -97,6 +97,14 @@ plot_grid(time_barplot, time_boxplot)
 
 # Customising `plot_grid`: Labels
 * specifying the desired labels in a vector 
+    * reminder: vectors are created with `c()`, by providing its elements
+    separated by commons, e.g. `c(1.6, 2.5, 3.2)` is a vector with three
+    elements of the type double.
+    * labels have to be provided for all or none of the panels i.e. the length
+    of the vector has to be the same as number of panels
+    * to label only certain panels make use of the empty string: `""` e.g.
+    `c("a", "")` will label first panel with a, second panel with nothing
+    
 * auto-generate labels with:
   * `labels="AUTO"` for upper-case labels
   * `labels="auto"` for lower-case labels.
@@ -445,9 +453,6 @@ knitr::include_graphics("images/ggpubr-example-bars.png")
 ```
   </div>
 </div>
-
-
-
 
 # References
 Cowplot documentation on this webpage:
