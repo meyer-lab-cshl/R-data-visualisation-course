@@ -1,7 +1,7 @@
 ---
-title: 'Data visualisation - part 3: compound figures with cowplot'
+title: 'Data visualisation with R - part 3: compound figures with cowplot'
 author: "Hannah Meyer"
-date: "01/08/2020"
+date: "January 2020"
 output:
   html_notebook:
     number_sections: yes
@@ -38,7 +38,7 @@ It is extensively documented on this webpage:
 # Setting up
 In the following two chunks, we will again set up our analys document by 
 specifying the options for `knitr` and
-```{r setup}
+```{r}
 knitr::opts_chunk$set(echo = TRUE,
                       comment = "#>",
                       collapse = TRUE,
@@ -48,7 +48,8 @@ knitr::opts_chunk$set(echo = TRUE,
 ```
 
 load all libraries required for our analysis:
-```{r libraries, message=FALSE}
+
+```{r, message=FALSE}
 library("tidyverse")
 library("cowplot")
 library("RColorBrewer")
@@ -98,6 +99,7 @@ time_boxplot <- p +
   theme_bw()
 
 ```
+
 `cowplot`'s `plot_grid` function takes these plotting objects as input and 
 arranges them into a grid.
 
@@ -107,6 +109,7 @@ To generate our first compound figure, we provide the bar and boxplot objects to
 ```{r}
 plot_grid(time_barplot, time_boxplot)
 ```
+
 ## Customising `plot_grid`
 `plot_grid` is highly customisable, including layout, labels, alignments and
 scaling.
@@ -117,6 +120,15 @@ plot, by either specifying the desired labels in a vector of the same lengths as
 the number of plots (as we do here for 2 plots) or by setting `labels="AUTO"` to
 auto-generate upper-case labels or `labels="auto"` to auto-generate lower-case
 labels.
+
+**Reminder**: vectors are created with `c()`, by providing its elements
+separated by commons, e.g. `c(1.6, 2.5, 3.2)` is a vector with three elements
+of the type double.
+
+* labels have to be provided for all or none of the panels i.e. the length
+ of the vector has to be the same as number of panels
+* to label only certain panels make use of the empty string: `""` e.g.
+    `c("a", "")` will label first panel with a, second panel with nothing
 
 ```{r}
 plot_grid(time_barplot, time_boxplot,
@@ -324,3 +336,26 @@ default one chosen?
 The `ggpubr` package provides some easy-to-use functions for creating and
 customizing `ggplot2`- based publication ready plots:
 [ggplot2 Based Publication Ready Plots](https://rpkgs.datanovia.com/ggpubr/)
+
+<div class="row" style="padding: 25px 50px 75px 50px"></div>
+<div class="row" style="padding: 25px 50px 75px 50px">
+  <div class="col-lg-4">
+```{r, echo=FALSE}
+knitr::include_graphics("images/ggpubr-example.png")
+```
+  </div>
+  <div class="col-lg-4">
+```{r, echo=FALSE}
+knitr::include_graphics("images/ggpubr-example-lollipop.png")
+```
+  </div>
+  <div class="col-lg-4">
+```{r, echo=FALSE}
+knitr::include_graphics("images/ggpubr-example-bars.png")
+```
+  </div>
+</div>
+
+# References
+Cowplot documentation on this webpage:
+[cowplot](https://wilkelab.org/cowplot/index.html)
