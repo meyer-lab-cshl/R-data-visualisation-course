@@ -1,7 +1,7 @@
 ---
 title: 'Data visualisation - part 2: visualisation with ggplot2'
 author: "Hannah Meyer"
-date: "01/08/2020"
+date: "January 2020"
 output:
   html_notebook:
     number_sections: yes
@@ -48,9 +48,9 @@ that viruses were isolated on a word map.
 
 # Setting up
 
-## Starting a Rproject for your analysis
+## Starting an Rproject for your analysis
 First, we will set up a project, where you will keep all files
-associated with that project - inlcuding your analysis reports, input data,
+associated with that project - including your analysis reports, input data,
 results and figures. 
 
 * In R studio click *File > New Project*.
@@ -62,19 +62,56 @@ In your files plane in R studio you can now see all the files you downloaded
 for this workshop. We will be able to easily read them into R and save results
 there. 
 
+**Note**:
 There are other ways of specifying the folders from which you read and where you
 write results and save plots to, but I would highly recommend this strategy.
 It keeps everything neat and you have all the important parts of your analysis
-in one place.
+in one place. 
 
-R studio can be customised and I leave this to everyone to figure out what
+When you start your own analysis (independent of this tutorial), follow the
+scheme above:
+
+* create a projects in R
+* choose *Existing directory*, then click on *Browse* to find the folder with
+  your data
+* Click *Create Project*  
+
+To generate a new file for you analysis:
+
+* choose *File > New File*
+* select:
+    * *R Markdown* for a file like the one you are looking at i.e. with text
+      and code chunks interleaved
+    * *R Script* for a file that only contains plain code, i.e. no need for
+      chunks as the entire file is one big chunk!
+
+## Starting an Rproject for your own analysis: some additional advice
+
+* Have a look at this
+[blog post](https://nicercode.github.io/blog/2013-04-05-projects/), with more
+advice on the structure and sub-folders in your project directory.
+* Rstudio provides a number of cheat sheets for the RStudio 
+interface setup, R Markdown etc. To acces them, choose *Help > Cheatsheets*:
+
+    * RStudio IDE Cheat Sheet
+    * R Markdown Cheat Sheet
+
+## Customising RStudio settings
+RStudio can be customised and I leave this to everyone to figure out what
 works best. However, I would recommend changing one default setting, which will
 ensure that when you start working in your project, you start of with a clean
 slate and none of previously computed data sticks around and confuses your
 analysis.
 
-For this setting go to *RStudio > Preferences* (on Mac) and ** (windows/unix).
-In *General* untick *restore .RData into workspace at startup*. 
+* on **Mac OS**:
+    * go to *RStudio > Preferences*
+    * in *General* untick *restore .RData into workspace at startup*. 
+
+
+* on **Windows** and **Linux**:
+    * go to *RStudio > Tools*
+    * in *global options* untick *restore .RData into workspace at startup*.
+
 
 We are all set now to go ahead with your first analysis and data visualisation
 in R!
@@ -169,6 +206,9 @@ each column.
 2. Have a look at the `coord` object by creating a new chunk,
 typing `coord` and executing the code chunk.
 3. Do you find the message printed by `read_csv` represented in `coord`?
+```{r}
+coord
+```
 
 
 # Data and object types
@@ -201,6 +241,8 @@ data.frames are one common data structure in base R;
 * `tibble`:  tibbles are 'opinionated data frames from the tidyverse' with an
 improved printing display, stricter rules for re-formating that aid in avoiding
 bugs and no rownames.
+* `c()`: one dimensional vector with its elements separated by commas, e.g
+ `c(1.6, 2.5, 3.2)` is a vector with three elements of the type double.
 
 **Note**: Tibbles are newer than data.frames and some old functions will not
 work with them and might require actual data.frames; For the majority of our
@@ -208,9 +250,29 @@ analyses and visualisations we will work with tibbles.
 
 
 ## Exercises: 
-1. Which data types are present in our dataset?
-2. How many observations and variables are in our dataset?
-3. What are the variables?
+Use the output of running `coord` to determine:
+
+1. which data types are present in our dataset;
+2. how many observations and variables are in our dataset.
+
+# Available data from antigenic cartography study
+I processed and formated the publically available data from @Smith2004 to
+generate the data you know see when running `coord`. The variable names
+(i.e. column names) specify what the data is we are looking at:
+
+
+|               	|   	|                                 	|
+|---------------	|---	|---------------------------------	|
+| `name`         	|   	| name of virus isolate           	|
+| `year`         	|   	| year of isolation               	|
+| `cluster`      	|   	| derived cluster                 	|
+| `type`         	|   	| serum or antigen measurement    	|
+| `x.coordinate` 	|   	| x coordinate in antigenic space 	|
+| `y.coordinate` 	|   	| y coordinate in antigenic space 	|
+| `location`     	|   	| location of virus measurement   	|
+| `lat`         	|   	| latitude of location            	|
+| `lng`          	|   	| longitude of location            	|
+
 
 # A recipe for generating graphs with ggplot2
 In the following section, we will generate our first plots using the `ggplot2`
@@ -300,10 +362,11 @@ The [colorbrewer website](http://colorbrewer2.org/) provides a great resource
 to pick appropriate color scales.
 
 `ggplot2` has direct access to these color schemes:
-```{r, fig.asp = 2.5, echo = FALSE}
+```{r, fig.asp = 2.5, echo = FALSE, out.height="80%"}
 par(mar = c(0, 3, 0, 0))
 RColorBrewer::display.brewer.all()
 ```
+
 
 ```{r}
 p +
@@ -444,10 +507,6 @@ p +
        color="Cluster") +
   coord_fixed()
   + theme_light()
-```
-
-```{r echo = FALSE}
-#knitr::include_graphics("images/visualization-themes.png")
 ```
 
 ## Saving your plots
@@ -599,7 +658,7 @@ options.
 3. Customise the color scale and plot labels in the boxplot showing the 
 distribution of measurements per type and year. What happens if you choose
 `aes(fill)` instead of `aes(color)`?
-4. Change `geom_jitter` to `geom_point` to see why geom_jitter is a better
+4. Change `geom_jitter` to `geom_point` to see why `geom_jitter` is a better
 visualisation of the data. Go back to using `geom_jitter` and play with the
 `width` argument to customise your plot.
 4. What would be a good `theme` for the world map? Add it to the plot.
