@@ -1,0 +1,110 @@
+---
+title: "Data visualisation - part 1: installing software"
+author: "Hannah Meyer"
+date: "01/08/2020"
+output:
+  pdf_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+  html_notebook:
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+---
+
+# Welcome!
+Welcome to the R course: Introduction to Data Visualization in R!
+The following document contains a checklist of things to do **before** the
+course starts. They are a requirement to participate in the course - if
+you run into any issues with the installation, let us know! 
+
+# Install R
+Go to this website to download and install R: https://cran.rstudio.com/.
+Choose the download link that matches your operating system (mac, windows,
+linux) and follow the instructions.
+
+# Install R studio desktop 
+Go to this website to download and install R studio - desktop version:
+https://rstudio.com/products/rstudio/download/.
+Choose the download link that matches your operating system (mac, windows,
+linux) and follow the instructions.
+
+Once you installed both R and R studio desktop (in that order!), open 
+R studio. 
+
+In the default set up, you will see four panels (see figure below):
+
+    * upper left: a text editor (where I am currently writing this text)
+    * lower left: your R terminal
+    * upper right: panel showing you an empty environment
+    * lower right: panel showing you files, plots, etc.
+ 
+
+```{r echo = FALSE, fig.align="center"}
+knitr::include_graphics("images/R-studio-screenshot.png", dpi=250)
+``` 
+We will talk about the function of all of these panels at the beginning of
+the course. For now, you just need to identify the R terminal i.e. the lower
+left panel. We will use this panel to install a  number of libraries that we
+will need during the course.
+
+# Install libraries
+Libraries or packages are a collection of functions, data and documentation
+for a specific task, for instance plotting or simulation.
+However, the initial R install only comes with a very basic set of
+libraries. Any additional packages that we want to use have to be installed 
+first.
+
+Copy the following lines into your R terminal (lower left panel) and press
+enter. You should see a lot of text being printed to the terminal, while R
+installs these packages.
+
+**Note**: If prompted to select if packages should be compiled from source,
+please enter 'no'.
+
+```{r install libraries, message=FALSE, eval=FALSE}
+install.packages("tidyverse")
+install.packages("forcats")
+install.packages("cowplot")
+install.packages("sf")
+install.packages("rnaturalearth")
+install.packages("RColorBrewer")
+install.packages("rgeos")
+```
+
+# Test your installation
+In the following section, we will test if the installation of the packages
+was successful. Do not worry if you do not understand the following commands
+yet, we will discuss them during the course. For now, we just want to make sure
+we can get started with the right set up on the day of the course.
+
+Please copy the following lines into your terminal and hit enter:
+```{r, message=FALSE, eval=TRUE}
+library("tidyverse")
+library("forcats")
+library("cowplot")
+library("sf")
+library("rnaturalearth")
+library("RColorBrewer")
+
+world <- ne_countries(scale = "medium", returnclass = "sf")
+left <- ggplot() + geom_sf(data = world)
+
+nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
+right <- ggplot(nc) + geom_sf(aes(fill = AREA))
+```
+
+Please copy these two lines now. If everything worked out, you should see the
+following output in your plots window (lower right) and terminal (lower left) 
+```{r test}
+plot_grid(left, right)
+
+head(RColorBrewer::brewer.pal.info)
+```
+
+Please make sure that you see the same output as above. If you run into
+problems, please reach out and we can try and help set it up before the class.
+We expect everyone to come with all requirements installed and will not help
+with the setup during class, so please be prepared and ask in advance!
