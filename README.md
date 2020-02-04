@@ -5,16 +5,7 @@ experience. It covers setting up R/RStudio, the basics of data
 visualisation and compound figure design as well as data transformation using
 the R `tidyverse`. 
 
-The following repository contains course notes and analyses scripts combined in
-Rmd, R notebooks and pdf files. In addition, the course presentations are
-provided as html files.
-
-The course contains exercises for each section, both in the course notes and
-the presentation. Solutions to the exercises can be found in the presentation.
-The data to run the examples is stored in the 'data' directory. Figures created
-throughout the course are stored in the 'results' directory.
-
-The course covers:
+## Synopsis of the course
 
 1. Installation of R, Rstudio and the required R libraries (part 1; pre-course
 preparation, no presentation);
@@ -26,6 +17,21 @@ To follow the course, start with part 1 (R-course-part1-installation.pdf), which
 explains how to set up R/RStudio, then get started with the second part by
 opening the .Rmd file (R-course-part2-ggplot.Rmd) in RStudio and the .html file
 (R-course-part2-ggplot-presentation.html) in a browser.
+
+## Course material
+The following repository contains course notes and analyses scripts combined in
+Rmd, R notebooks and pdf files. In addition, the course presentations are
+provided as html files. 
+
+The course contains exercises for each section, both in the course notes and
+the presentation. Solutions to the exercises can be found in the presentation.
+The data to run the examples is stored in the 'data' directory. Figures created
+throughout the course are stored in the 'results' directory.
+
+## Access the course material
+You can either clone the repository or, if you are unfamiliar with
+git/github, simply click the green 'clone or download' button and choose the option to
+download the material as a .zip folder.
 
 This course was initally run as part of the *Cold Spring Harbor Laboratory career development series*.
 It was designed and taught by Hannah V. Meyer, faculty at Cold Spring Harbor 
