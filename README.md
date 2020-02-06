@@ -36,3 +36,8 @@ download the material as a .zip folder.
 This course was initally run as part of the *Cold Spring Harbor Laboratory career development series*.
 It was designed and taught by Hannah V. Meyer, faculty at Cold Spring Harbor 
 Laboratory. References for data and adapted figures as indicated.
+
+## Evaluations
+* 35 participants, January 2020, CSHL
+
+![](evaluation/survey.png)
