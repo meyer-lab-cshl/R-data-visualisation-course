@@ -1,0 +1,20 @@
+"Data Visualization in R
+with Hannah Meyer
+January 28 & 30, 2020
+",,,,,,,,,,,,,,,,,,,,,,,,Mean,Median,Mode
+Q1.  How did you hear about the workshop?,Email,Email,Email,Email,Email,Email,Email,Email,Email,Email,Word of Mouth,Email,Email,Flyer,Email,Email,"Flyer, Email",Email,Email,Email,Email,Email,,,,
+Q2.  Overall how would you rate the workshop?,4,3,5,5,5,5,4,4,5,5,5,4,5,5,4,5,5,4,5,5,4,5,,4.59,5.00,5.00
+Q3.  Was the workshop taught at an appropriate level?,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,2,1,2,1,,1.95,2.00,2.00
+Q4.  Rate the instructor's expertise,5,4,5,5,5,5,5,5,5,5,5,5,5,5,4,5,5,5,5,5,5,5,,4.91,5.00,5.00
+Q5.  Do you feel more confident in your knowledge of this topic after the workshop?,1,2,2,1,1,1,2,1,1,2,1,1,2,1,2,1,1,2,1,2,2,2,,1.45,1.00,1.00
+Q6.  What other topics would you be interested in learning about?,Handling high dimensional data like RNA-seq etc.,,More similar R sessions,Data analysis for RNA-seq,"Introduction to command line for analyzing biological data would be very useful, analyzing spcific types of data (ex. RNA-seq, differential gene expression, etc.)","Statistical tests and what's appropriate for what kinds of data sets - this migh be a ""bring your own data"" kind of session or send it in advance and instructor chooses good examples from the group. (Note: For non-""omics"" type data analysis)",,,,"RNA, DNA seq analysis","Statistics, gene expressions, cut/run, ChIP-seq analysis",,"SeRNA seq, ATAC seq, data analysis",,,We need longer time course and it's better to add session to solve specific questions with our own data (may two more sessions with TA around),,Clustering data,RNAseq of ChIPseq data analysis in R,,Heatmaps with more complex annotations,"More data analysis type of stuff (functions, error bases) actual gene expression analysis examples ChIPseq",,,,
+Q7.  Please add any other comments or suggestions for additional scientific enrichment workshops,,,,,,,,,,,,,Statistics workshops,,,Would be cool to add single cell RNAseq analysis course using R software,"Longer sessions with some more fundamentals of R like data structures, type, & usages",,This was super helpful!,"Course be a little longer covering more basics on what are vectors, classes, functions, etc. and longer course C2 sessions is too little",,"Starts slowly, very basic, but then when we get to complicated stuff - no time! Put simple stuff in bootcamp homework",,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+"Q5.
+1 = Very Much
+2 = A Little
+3 = Not at All",,,,,,,,,,,,,,,,,,,,,,,,,,

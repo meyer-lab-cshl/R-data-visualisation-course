@@ -1,0 +1,118 @@
+---
+title: "Course evaluation"
+author: "Hannah Meyer"
+date: "05/02/2020"
+output:
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      cache=TRUE,
+                      comment = "#>",
+                      collapse = TRUE,
+                      fig.align = "center",
+                      fig.pos = 'h',
+                      out.width = "80%")
+```
+
+
+## Read required libraries
+```{r}
+library(tidyverse)
+```
+
+## Read data
+Survey data from 28 out of 35 participants of the Workshop:
+```{r}
+survey <- read_csv("2020_Evaluations_DataVisualR_HMeyer.csv", skip = 2,
+                   col_names = FALSE)
+```
+
+Format into long format, change type and add short version of questions:
+```{r}
+tb <- survey[1:5,] %>%
+    column_to_rownames("X1") %>%
+    t %>%
+    as_tibble %>%
+    select(-starts_with("Q1")) %>%
+    mutate_each(funs(as.integer)) %>%
+    pivot_longer(col=starts_with("Q"), names_to = "question_long",
+                 values_to="score") %>%
+    mutate(question=gsub("Q(\\d).*", "\\1", question_long)) %>%
+    mutate(question_long=gsub("Q\\d\\.  (.*)", "\\1", question_long)) %>%
+    drop_na
+```
+
+## Prepare for plotting per data type
+Set separate levels where appropriate, verbalise the selection levels:
+
+```{r}
+q3 <- tb %>%
+    filter(question == 3) %>% 
+    mutate(factorscores=factor(score, levels=1:3,
+                               labels=c("too easy", "appropriate", "too hard")))
+q2q4 <- tb %>%
+    filter(question %in% c(2,4)) %>% 
+    mutate(factorscores=factor(score, levels=1:5,
+                               labels=c("very poor", "poor", "average",
+                                        "good", "very good")))
+
+q5 <- tb %>%
+    filter(question == 5) %>% 
+    mutate(factorscores=factor(score, levels=1:3,
+                               labels=c("very much", "a little", "not at all")))
+
+```
+
+## Visualise results
+Show number of survey responses per score and question; summarise similar
+questions (Q2 and Q4) into one plot:
+
+```{r}
+q2q4_plot <- ggplot(data=q2q4,
+                        aes(x=question_long, fill=factorscores))
+q2q4_plot <- q2q4_plot + geom_bar(position=position_dodge(preserve = "single")) +
+    scale_fill_brewer(type="qual", drop=FALSE) + 
+    coord_cartesian(ylim=c(0,23)) +
+    labs(x="", 
+         y="Score counts",
+         fill="Score") +
+    theme_bw() +
+    theme(legend.position = "bottom")
+
+q3_plot <- ggplot(data=q3,
+                        aes(x=question_long, fill=factorscores))
+q3_plot <- q3_plot + geom_bar(position=position_dodge(preserve = "single")) +
+    scale_fill_manual(values=c( "#d95f02", "#1b9e77","#7570b3"), drop=FALSE) + 
+    coord_cartesian(ylim=c(0,23)) +
+    labs(x="", 
+         y="Score counts",
+         fill="Score") +
+    theme_bw() +
+    theme(legend.position = "bottom")
+
+
+q5_plot <- ggplot(data=q5,
+                        aes(x=question_long, fill=factorscores))
+q5_plot <- q5_plot + geom_bar(position=position_dodge(preserve = "single")) +
+    scale_fill_manual(values=c("#e7298a","#66a61e", "#e6ab02"), drop=FALSE) + 
+    scale_x_discrete(labels="Do you feel more confident in this topic after the workshop?") +
+    coord_cartesian(ylim=c(0,23)) +
+    labs(x="", 
+         y="Score counts",
+         fill="Score") +
+    theme_bw() +
+    theme(legend.position = "bottom")
+```
+
+Combine plots in plot grid:
+```{r sumary-plot, fig.height=8.5, fig.width=8}
+cowplot::plot_grid(q2q4_plot,
+                   cowplot::plot_grid(q3_plot, q5_plot, nrow=1), 
+                   nrow=2,
+                   align="v",
+                   axis="r")
+```
