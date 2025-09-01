@@ -1,17 +1,17 @@
 ---
-title: 'Data visualisation - part 2: visualisation with ggplot2'
+title: 'R bootcamp - part 2: visualisation with ggplot2'
 author: "Hannah Meyer"
-date: "January 2020"
+date: "September 2025"
 output:
+  pdf_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
   html_notebook:
     number_sections: yes
     toc: yes
     toc_depth: 3
     toc_float: yes
-  pdf_document:
-    number_sections: yes
-    toc: yes
-    toc_depth: 3
 bibliography: bibliography.bib
 ---
 

@@ -1,11 +1,11 @@
 ---
-title: "CSHL career development series"
-subtitle: "Data visualisation with R - part 2: visualisation with ggplot2"
+title: "R bootcamp"
+subtitle: "Part 2: visualisation with ggplot2"
 author: "Hannah Meyer"
-date: "January 2020"
+date: "September 2025"
 output:
   slidy_presentation:
-    footer: "Data visualisation with R, January 2020"
+    footer: "R bootcamp, September 2025"
     theme: spacelab
     highlight: tango
 bibliography: bibliography.bib
@@ -344,7 +344,7 @@ coord
 
 # Available data from antigenic cartography study
 
-* `coord` contains processed and formated the publically available data from
+* `coord` contains the processed and formated publicly available data from
 @Smith2004
 * column names specify available variables:
 

@@ -1,7 +1,7 @@
 ---
-title: "Data visualisation - part 1: installing software"
+title: "R bootcamp - part 1: installing software"
 author: "Hannah Meyer"
-date: "01/08/2020"
+date: "September 2025"
 output:
   pdf_document:
     number_sections: yes
@@ -20,13 +20,20 @@ The following document contains a checklist of things to do **before** the
 course starts. They are a requirement to participate in the course - if
 you run into any issues with the installation, let us know! 
 
-# Install R
-Go to this website to download and install R: https://cran.rstudio.com/.
+# Install R and R studio desktop 
+
+If you use a Mac and use `brew` for managing your software, please do:
+```{bash, eval=FALSE}
+brew install r
+brew install --cask rstudio
+```
+
+If you are on a different operating system or you do not use `brew`, please go
+to this website to download and install R: https://cran.rstudio.com/.
 Choose the download link that matches your operating system (mac, windows,
 linux) and follow the instructions.
 
-# Install R studio desktop 
-Go to this website to download and install R studio - desktop version:
+Then, go to this website to download and install R studio - desktop version:
 https://rstudio.com/products/rstudio/download/.
 Choose the download link that matches your operating system (mac, windows,
 linux) and follow the instructions.
