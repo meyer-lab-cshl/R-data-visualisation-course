@@ -1,7 +1,7 @@
 ---
-title: 'Data visualisation with R - part 4: data processing with dplyr'
+title: 'R bootcamp - part 4: data processing with dplyr'
 author: "Hannah Meyer"
-date: "January 2020"
+date: "September 2025"
 output:
   pdf_document:
     toc: yes
@@ -59,7 +59,10 @@ knitr::opts_chunk$set(echo = TRUE,
 
 load the required libraries
 ```{r libraries, message=FALSE}
-library("tidyverse")
+library("readr")
+library("dplyr")
+library("ggplot2")
+library("forcats")
 ```
 
 and read our dataset into R again:

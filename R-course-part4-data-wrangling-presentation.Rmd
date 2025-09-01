@@ -1,11 +1,11 @@
 ---
-title: "CSHL career development series"
-subtitle: "Data visualisation with R - part 4: data processing with dplyr"
+title: "R bootcamp"
+subtitle: "part 4: data processing with dplyr"
 author: "Hannah Meyer"
-date: "January 2020"
+date: "September 2025"
 output:
   slidy_presentation:
-    footer: "Data visualisation with R, January 2020"
+    footer: "R bootcamp, September 2025"
     theme: spacelab
     highlight: tango
 bibliography: bibliography.bib
@@ -40,7 +40,8 @@ knitr::include_graphics("images/dplyr.png")
 
 * load the required libraries
 ```{r libraries, message=FALSE}
-library("tidyverse")
+library("readr")
+library("dplyr")
 ```
 
 * read data
@@ -342,7 +343,7 @@ knitr::include_graphics("images/dplyr-filter.png")
 * `<`: less than
 * `<=`: less or equal than
 
-**Note**: When testing for equality, make sure to use `==` and not a simple `=`!
+**Note**: When testing for equality, make sure to use `==` and not a simple `=` !
 
 **Example**: select all observations of viruses in circulation before 1988:
 ```{r}
@@ -559,7 +560,7 @@ circulation_summary <- coord %>%
 
 p <- ggplot(circulation_summary)
 p + geom_segment(aes(x=start, xend=end, y=cluster, yend=cluster,
-                     size=location, color=cluster)) +
+                     linewidth=location, color=cluster)) +
     scale_color_brewer(type="qual", palette = "Set3") +
     labs(x="Year",
          y="Antigenic cluster",
@@ -604,7 +605,7 @@ circulation_summary <- coord %>%
 
 p <- ggplot(circulation_summary)
 p + geom_segment(aes(x=start, xend=end, y=cluster, yend=cluster,
-                     size=location, color=cluster)) +
+                     linewidth=location, color=cluster)) +
     scale_color_brewer(type="qual", palette = "Set3") +
     labs(x="Year",
          y="Antigenic cluster",

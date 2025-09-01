@@ -1,8 +1,12 @@
 ---
-title: 'Data visualisation with R - part 3: compound figures with cowplot'
+title: 'R bootcamp - part 3: compound figures with cowplot'
 author: "Hannah Meyer"
-date: "January 2020"
+date: "September 2025"
 output:
+  pdf_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
   html_notebook:
     number_sections: yes
     toc: yes
@@ -10,10 +14,6 @@ output:
     toc_float: yes
   html_document:
     df_print: paged
-    toc: yes
-    toc_depth: 3
-  pdf_document:
-    number_sections: yes
     toc: yes
     toc_depth: 3
 bibliography: bibliography.bib
@@ -50,7 +50,8 @@ knitr::opts_chunk$set(echo = TRUE,
 load all libraries required for our analysis:
 
 ```{r, message=FALSE}
-library("tidyverse")
+library("readr")
+library("ggplot2")
 library("cowplot")
 library("RColorBrewer")
 ```

@@ -1,11 +1,11 @@
 ---
-title: "CSHL career development series"
-subtitle: "Data visualisation with R - part 3: compound figures with cowplot"
+title: "R bootcamp"
+subtitle: "part 3: compound figures with cowplot"
 author: "Hannah Meyer"
-date: "January 2020"
+date: "September 2025"
 output:
   slidy_presentation:
-    footer: "Data visualisation with R, January 2020"
+    footer: "R bootcamp, September 2025"
     theme: spacelab
     highlight: tango
 bibliography: bibliography.bib
@@ -35,7 +35,8 @@ knitr::opts_chunk$set(echo = TRUE,
 # Loading libraries
 
 ```{r}
-library("tidyverse")
+library("readr")
+library("ggplot2")
 library("cowplot")
 library("RColorBrewer")
 ```
@@ -58,7 +59,7 @@ p <- ggplot(data=coord)
 
 # Individual visualisations
 
-* recreate plots from "Data visualisation with R - part 2: visualisation with
+* recreate plots from "R bootcamp - part 2: visualisation with
 ggplot2" 
 * save them in individual `ggplot2` objects
 
