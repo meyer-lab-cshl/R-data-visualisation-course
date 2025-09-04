@@ -78,7 +78,6 @@ install.packages("cowplot")
 install.packages("sf")
 install.packages("rnaturalearth")
 install.packages("RColorBrewer")
-install.packages("rgeos")
 ```
 
 # Test your installation
